@@ -64,7 +64,6 @@ button:disabled { cursor: not-allowed; }
 .sidebar-note h3 strong { color: #008cff; font-size: 25px; }
 .note-line { width: 30px; height: 3px; background: #00c9ad; margin-top: 15px; border-radius: 3px; }
 .sidebar-note { padding-bottom: 24px; }
-.sidebar-links { display: flex; flex-direction: column; }
 .sidebar-help { display: flex; justify-content: space-between; padding: 17px 8px 0; color: #6480a1; font-size: 11px; }
 .sidebar-help:hover { color: #0086ef; }
 .app-body { margin-left: 224px; padding-top: 86px; }

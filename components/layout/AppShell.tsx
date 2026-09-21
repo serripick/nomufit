@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useId, useState } from "react";
+import { ReactNode, useEffect, useId, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -10,7 +10,22 @@ const NAV_ITEMS = [
   { href: "/payslip", label: "임금대장", icon: WonIcon },
   { href: "/subsidies", label: "고용지원금", icon: GiftIcon },
   { href: "/forms", label: "노무서식", icon: FolderIcon },
+  { href: "/apply#calculator", label: "연차계산기", icon: LeaveIcon },
 ];
+
+/** pathname은 해시(#)를 포함하지 않으므로, 현재 위치를 pathname+hash로 합쳐서 비교해야
+ * "근로계약서"(/apply)와 "연차계산기"(/apply#calculator)가 서로 헷갈리지 않고 정확히 구분된다. */
+function useCurrentPathWithHash(): string {
+  const pathname = usePathname();
+  const [hash, setHash] = useState("");
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash);
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, [pathname]);
+  return pathname + hash;
+}
 
 export function LogoMark({ size = 40 }: { size?: number }) {
   return (
@@ -77,6 +92,16 @@ function GiftIcon({ className }: { className?: string }) {
   );
 }
 
+function LeaveIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <rect x="4" y="5" width="16" height="15" rx="1.5" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M4 9.5h16M8 3.5v3M16 3.5v3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M8.5 14.2 10.8 16.3 15.5 12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function FolderIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
@@ -118,17 +143,17 @@ function WorkspaceSearch() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const currentPath = useCurrentPathWithHash();
   return (
     <div className="app-shell">
       <a href="#main-content" className="skip-link">본문으로 바로가기</a>
       <header className="app-topbar print:hidden"><Brand /><p className="brand-tagline">사업장의 노무, <strong>딱 맞게.</strong></p><WorkspaceSearch /><span className="workspace-profile"><span className="profile-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4" /><path d="M4 22v-3a8 8 0 0 1 16 0v3Z" /></svg></span><span>내 워크스페이스</span></span></header>
       <aside className="app-sidebar print:hidden">
-        <nav aria-label="주 메뉴" className="sidebar-nav">{NAV_ITEMS.map((item) => <Link href={item.href} key={item.href} aria-current={pathname === item.href ? "page" : undefined} className={`sidebar-link ${pathname === item.href ? "is-active" : ""}`}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
-        <div className="sidebar-bottom"><div className="sidebar-note"><h3>좋은 사람과<br />더 나은 회사를<br /><strong>노무핏</strong>이<br />함께합니다.</h3><div className="note-line" /></div><div className="sidebar-links"><Link className="sidebar-help" href="/apply#calculator">연차수당 계산기 <span aria-hidden="true">↗</span></Link><Link className="sidebar-help" href="/#faq-title">이용 가이드 <span aria-hidden="true">↗</span></Link></div></div>
+        <nav aria-label="주 메뉴" className="sidebar-nav">{NAV_ITEMS.map((item) => <Link href={item.href} key={item.href} aria-current={currentPath === item.href ? "page" : undefined} className={`sidebar-link ${currentPath === item.href ? "is-active" : ""}`}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
+        <div className="sidebar-bottom"><div className="sidebar-note"><h3>좋은 사람과<br />더 나은 회사를<br /><strong>노무핏</strong>이<br />함께합니다.</h3><div className="note-line" /></div><Link className="sidebar-help" href="/#faq-title">이용 가이드 <span aria-hidden="true">↗</span></Link></div>
       </aside>
       <div className="app-body"><main id="main-content" className="app-main">{children}</main></div>
-      <nav className="mobile-nav print:hidden" aria-label="모바일 주 메뉴">{NAV_ITEMS.map((item) => <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined} className={pathname === item.href ? "is-active" : ""}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
+      <nav className="mobile-nav print:hidden" aria-label="모바일 주 메뉴">{NAV_ITEMS.map((item) => <Link key={item.href} href={item.href} aria-current={currentPath === item.href ? "page" : undefined} className={currentPath === item.href ? "is-active" : ""}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
     </div>
   );
 }
