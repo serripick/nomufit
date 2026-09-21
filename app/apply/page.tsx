@@ -79,6 +79,13 @@ export default function ApplyPage() {
   const [activeTab, setActiveTab] = useState<"contract" | "calculator">("contract");
   const businessSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // 다른 화면에서 /apply#calculator로 들어오면 연차수당 계산기 탭을 바로 연다.
+  useEffect(() => {
+    if (window.location.hash === "#calculator") {
+      setActiveTab("calculator");
+    }
+  }, []);
+
   // 이 브라우저가 마지막으로 조회했던 사업장이 있으면 자동으로 다시 불러온다.
   useEffect(() => {
     const savedRegNumber = getStoredBusinessRegNumber();
