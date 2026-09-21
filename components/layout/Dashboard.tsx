@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FeatureIcon, LogoMark } from "@/components/layout/AppShell";
+import { FeatureIcon } from "@/components/layout/AppShell";
 
 const features = [
   { href: "/apply", title: "근로계약서", description: "우리 사업장에 맞는\n근로계약서 작성", color: "blue" },
@@ -20,6 +20,30 @@ function ServiceArtwork({ index }: { index: number }) {
   return <span className="service-artwork" aria-hidden="true"><span className="icon-back" /><span className="icon-front"><FeatureIcon index={index + 1} /></span></span>;
 }
 
+function HeroLaptop() {
+  return (
+    <svg viewBox="0 0 320 240" className="hero-laptop-art" aria-hidden="true">
+      <ellipse cx="228" cy="72" rx="92" ry="72" fill="#e1f3ff" />
+      <ellipse cx="86" cy="176" rx="76" ry="58" fill="#e1faf3" />
+      <g transform="translate(22 118)">
+        <rect x="0" y="46" width="32" height="20" rx="5" fill="#ffffff" stroke="#dbe7f4" />
+        <path d="M16 46C16 18 -4 16 3 -2C12 16 16 26 16 46Z" fill="#93ddc6" />
+        <path d="M16 46C16 10 32 6 27 -10C18 8 16 24 16 46Z" fill="#5fc8ac" />
+      </g>
+      <path d="M68 210 L252 210 L266 226 L54 226 Z" fill="#c9d5e4" />
+      <rect x="68" y="205" width="184" height="7" rx="3.5" fill="#aebbcd" />
+      <rect x="84" y="26" width="152" height="182" rx="12" fill="#102D53" />
+      <rect x="93" y="35" width="134" height="164" rx="5" fill="#f4f9ff" />
+      <g transform="translate(120 76) scale(1.34)">
+        <rect x="5" y="17" width="17" height="43" rx="8.5" fill="#102D53" />
+        <path d="M5 25V21C5 13 14 9 20 15L52 43V60C48 61 45 59 41 55L19 34V25C19 18 11 17 5 25Z" fill="#102D53" />
+        <path d="M44 29C44 18 61 18 61 29V51C61 59 54 63 47 58L39 51C44 52 44 45 44 41V29Z" fill="#02BFA8" />
+        <circle cx="52.5" cy="10" r="7.5" fill="#02BFA8" />
+      </g>
+    </svg>
+  );
+}
+
 export default function Dashboard() {
   return (
     <div className="dashboard">
@@ -32,8 +56,7 @@ export default function Dashboard() {
           <ul className="hero-benefits"><li><span aria-hidden="true">✓</span>사업장 정보 연동</li><li><span aria-hidden="true">◷</span>반복 업무는 간결하게</li><li><span aria-hidden="true">▤</span>문서 미리보기·출력</li></ul>
         </div>
         <div className="hero-visual" aria-hidden="true">
-          <div className="hero-visual-glow" />
-          <LogoMark size={104} />
+          <HeroLaptop />
         </div>
       </section>
 

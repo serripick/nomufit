@@ -13,17 +13,12 @@ const NAV_ITEMS = [
 ];
 
 export function LogoMark({ size = 40 }: { size?: number }) {
-  const id = useId();
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id={`${id}-blue`} x1="8" y1="13" x2="44" y2="51" gradientUnits="userSpaceOnUse"><stop stopColor="#058EFF" /><stop offset="1" stopColor="#075EA8" /></linearGradient>
-        <linearGradient id={`${id}-mint`} x1="46" y1="19" x2="60" y2="61" gradientUnits="userSpaceOnUse"><stop stopColor="#05D5BE" /><stop offset="1" stopColor="#02B39F" /></linearGradient>
-      </defs>
       <rect x="5" y="17" width="17" height="43" rx="8.5" fill="#102D53" />
-      <path d="M5 25V21C5 13 14 9 20 15L52 43V60C48 61 45 59 41 55L19 34V25C19 18 11 17 5 25Z" fill={`url(#${id}-blue)`} />
-      <path d="M44 29C44 18 61 18 61 29V51C61 59 54 63 47 58L39 51C44 52 44 45 44 41V29Z" fill={`url(#${id}-mint)`} />
-      <circle cx="52.5" cy="10" r="7.5" fill="#02CBB7" />
+      <path d="M5 25V21C5 13 14 9 20 15L52 43V60C48 61 45 59 41 55L19 34V25C19 18 11 17 5 25Z" fill="#102D53" />
+      <path d="M44 29C44 18 61 18 61 29V51C61 59 54 63 47 58L39 51C44 52 44 45 44 41V29Z" fill="#02BFA8" />
+      <circle cx="52.5" cy="10" r="7.5" fill="#02BFA8" />
     </svg>
   );
 }
