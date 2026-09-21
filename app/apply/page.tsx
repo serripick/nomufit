@@ -76,6 +76,7 @@ export default function ApplyPage() {
   const [formData, setFormData] = useState<ContractFormData>(() => createDefaultFormData());
   const [loadedEmployeeId, setLoadedEmployeeId] = useState<string | null>(null);
   const [draftLoaded, setDraftLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState<"contract" | "calculator">("contract");
   const businessSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 이 브라우저가 마지막으로 조회했던 사업장이 있으면 자동으로 다시 불러온다.
@@ -160,6 +161,7 @@ export default function ApplyPage() {
       businessInfo: {
         ...formData.businessInfo,
         workerName: record.workerName,
+        workerGender: record.workerGender,
         workerBirthDate: record.workerBirthDate,
         workerAddress: record.workerAddress,
         workerPhone: record.workerPhone,
@@ -246,7 +248,41 @@ export default function ApplyPage() {
         </button>
       </div>
 
-      <main className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 print:block print:max-w-none print:gap-0 print:p-0 lg:grid-cols-2">
+      <div className="mx-auto max-w-6xl px-4 pt-4 sm:px-6 print:hidden">
+        <div className="inline-flex rounded-full bg-slate-100 p-1 text-sm font-medium">
+          <button
+            type="button"
+            onClick={() => setActiveTab("contract")}
+            className={
+              "rounded-full px-4 py-1.5 transition-colors " +
+              (activeTab === "contract"
+                ? "bg-white text-blue-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800")
+            }
+          >
+            계약서 작성
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("calculator")}
+            className={
+              "rounded-full px-4 py-1.5 transition-colors " +
+              (activeTab === "calculator"
+                ? "bg-white text-blue-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800")
+            }
+          >
+            연차수당 계산기
+          </button>
+        </div>
+      </div>
+
+      <main
+        className={
+          "mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 print:block print:max-w-none print:gap-0 print:p-0 lg:grid-cols-2 " +
+          (activeTab === "contract" ? "" : "hidden")
+        }
+      >
         <div className="space-y-6 print:hidden">
           <SectionCard title="직원 현황표">
             <EmployeeRoster
@@ -335,17 +371,19 @@ export default function ApplyPage() {
         </div>
       </main>
 
-      <div className="mx-auto max-w-6xl space-y-6 px-4 pb-8 sm:px-6 print:hidden">
-        <SectionCard title="연차수당 정산 계산기 (별도 도구, 계약서 내용에는 반영되지 않음)">
-          <AnnualLeaveCalculator
-            defaultHireDate={formData.businessInfo.contractStartDate}
-            wage={formData.wage}
-            employmentPattern={formData.employmentPattern}
-            breakTimes={formData.breakTimes}
-            fiveOrMoreEmployees={formData.businessInfo.fiveOrMoreEmployees}
-          />
-        </SectionCard>
-      </div>
+      {activeTab === "calculator" && (
+        <div className="mx-auto max-w-6xl space-y-6 px-4 pb-8 sm:px-6 print:hidden">
+          <SectionCard title="연차수당 정산 계산기 (별도 도구, 계약서 내용에는 반영되지 않음)">
+            <AnnualLeaveCalculator
+              defaultHireDate={formData.businessInfo.contractStartDate}
+              wage={formData.wage}
+              employmentPattern={formData.employmentPattern}
+              breakTimes={formData.breakTimes}
+              fiveOrMoreEmployees={formData.businessInfo.fiveOrMoreEmployees}
+            />
+          </SectionCard>
+        </div>
+      )}
     </AppShell>
   );
 }

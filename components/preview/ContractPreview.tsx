@@ -143,6 +143,7 @@ export function ContractPreview({ data }: { data: ContractFormData }) {
               title="근로자 (을)"
               rows={[
                 { label: "성명", value: businessInfo.workerName },
+                { label: "성별", value: businessInfo.workerGender === "F" ? "여성" : "남성" },
                 { label: "주소", value: businessInfo.workerAddress },
                 { label: "생년월일", value: businessInfo.workerBirthDate },
                 { label: "연락처", value: businessInfo.workerPhone },

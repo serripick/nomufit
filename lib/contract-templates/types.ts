@@ -135,6 +135,8 @@ export interface SocialInsuranceInfo {
   industrialAccident: boolean;
 }
 
+export type Gender = "M" | "F";
+
 export interface BusinessInfo {
   businessName: string;
   representativeName: string;
@@ -144,6 +146,7 @@ export interface BusinessInfo {
   /** 상시근로자 5인 이상 여부. 연장/야간/휴일 가산수당(1.5배)·연차휴가 의무·공휴일 유급화 등이 이 값에 따라 달라진다. */
   fiveOrMoreEmployees: boolean;
   workerName: string;
+  workerGender: Gender;
   workerBirthDate: string;
   workerAddress: string;
   workerPhone: string;

@@ -97,6 +97,27 @@ export function BusinessInfoFields({
           />
         </div>
         <div>
+          <FieldLabel>근로자 성별</FieldLabel>
+          <div className="flex h-[42px] items-center gap-4">
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                checked={data.workerGender === "M"}
+                onChange={() => onChange({ ...data, workerGender: "M" })}
+              />
+              남성
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="radio"
+                checked={data.workerGender === "F"}
+                onChange={() => onChange({ ...data, workerGender: "F" })}
+              />
+              여성
+            </label>
+          </div>
+        </div>
+        <div>
           <FieldLabel>근로자 생년월일</FieldLabel>
           <TextInput
             type="date"

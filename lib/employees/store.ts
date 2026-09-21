@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase/client";
+import { Gender } from "@/lib/contract-templates/types";
 import { EmployeeRecord, EmployeeRecordInput } from "./types";
 
 interface EmployeeRow {
@@ -6,6 +7,7 @@ interface EmployeeRow {
   created_at: string;
   updated_at: string;
   worker_name: string;
+  worker_gender: Gender | null;
   worker_birth_date: string | null;
   worker_address: string | null;
   worker_phone: string | null;
@@ -26,6 +28,7 @@ function fromRow(row: EmployeeRow): EmployeeRecord {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     workerName: row.worker_name,
+    workerGender: row.worker_gender ?? "M",
     workerBirthDate: row.worker_birth_date ?? "",
     workerAddress: row.worker_address ?? "",
     workerPhone: row.worker_phone ?? "",
@@ -44,6 +47,7 @@ function fromRow(row: EmployeeRow): EmployeeRecord {
 function toRow(input: EmployeeRecordInput) {
   return {
     worker_name: input.workerName,
+    worker_gender: input.workerGender,
     worker_birth_date: input.workerBirthDate || null,
     worker_address: input.workerAddress || null,
     worker_phone: input.workerPhone || null,

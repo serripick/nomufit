@@ -1,4 +1,4 @@
-import { BreakTimeEntry, EmploymentPatternData, WageInfo } from "@/lib/contract-templates/types";
+import { BreakTimeEntry, EmploymentPatternData, Gender, WageInfo } from "@/lib/contract-templates/types";
 
 export interface EmployeeRecord {
   id: string;
@@ -6,6 +6,7 @@ export interface EmployeeRecord {
   updatedAt: string;
 
   workerName: string;
+  workerGender: Gender;
   workerBirthDate: string;
   workerAddress: string;
   workerPhone: string;

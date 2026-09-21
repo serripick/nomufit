@@ -18,6 +18,7 @@ create table if not exists employees (
   updated_at timestamptz not null default now(),
 
   worker_name text not null,
+  worker_gender text,
   worker_birth_date date,
   worker_address text,
   worker_phone text,
@@ -35,6 +36,7 @@ create table if not exists employees (
 );
 
 alter table employees add column if not exists business_id uuid references businesses(id) on delete cascade;
+alter table employees add column if not exists worker_gender text check (worker_gender in ('M', 'F'));
 
 -- 사업장 구분 없이 만들어졌던 기존 테스트 데이터는 정리한다.
 delete from employees where business_id is null;

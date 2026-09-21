@@ -7,6 +7,7 @@ function toInput(data: ContractFormData): EmployeeRecordInput {
   const { businessInfo, employmentPattern, breakTimes, wage } = data;
   return {
     workerName: businessInfo.workerName,
+    workerGender: businessInfo.workerGender,
     workerBirthDate: businessInfo.workerBirthDate,
     workerAddress: businessInfo.workerAddress,
     workerPhone: businessInfo.workerPhone,
