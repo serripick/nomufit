@@ -56,6 +56,20 @@ export async function createBusiness(input: BusinessRecordInput): Promise<Busine
   return fromRow(data as BusinessRow);
 }
 
+export async function listBusinesses(): Promise<BusinessRecord[]> {
+  const { data, error } = await supabase
+    .from("businesses")
+    .select("*")
+    .order("business_registration_number");
+  if (error) throw error;
+  return (data as BusinessRow[]).map(fromRow);
+}
+
+export async function deleteBusiness(id: string): Promise<void> {
+  const { error } = await supabase.from("businesses").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function updateBusiness(
   id: string,
   input: BusinessRecordInput
