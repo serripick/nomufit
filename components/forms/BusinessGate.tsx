@@ -51,8 +51,8 @@ export function BusinessGate({
   };
 
   return (
-    <div className="mx-auto max-w-md py-16">
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="business-gate">
+      <div className="business-gate-card">
         <h2 className="text-lg font-semibold text-slate-900">사업장 조회</h2>
         <p className="mt-1 text-sm text-slate-500">
           사업자등록번호를 입력하면 해당 사업장의 정보와 직원 현황표를 불러옵니다. 처음
@@ -102,3 +102,4 @@ export function BusinessGate({
     </div>
   );
 }
+

@@ -103,7 +103,7 @@ export function CurrencyInput({
 
 export function SectionCard({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:p-6">
+    <section className="section-card rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:p-6">
       <h3 className="mb-4 text-base font-semibold text-slate-900">{title}</h3>
       <div className="space-y-4">{children}</div>
     </section>
@@ -155,3 +155,4 @@ export function WeekdayCheckboxGroup({
     </div>
   );
 }
+
