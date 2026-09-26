@@ -23,6 +23,7 @@ import {
 } from "@/lib/businesses/currentBusiness";
 import { PayslipPreview } from "@/components/preview/PayslipPreview";
 import { PrintGate } from "@/components/preview/PrintGate";
+import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 
 const now = new Date();
@@ -374,14 +375,16 @@ export default function PayslipPage() {
                   payDay={payDay}
                 />
               </PrintGate>
-              {!business.approved && (
-                <div className="mt-4 print:hidden">
+              <div className="mt-4 print:hidden">
+                {business.approved ? (
+                  <PrintDownloadButton />
+                ) : (
                   <InquiryForm
                     businessRegistrationNumber={business.businessRegistrationNumber}
                     businessName={business.businessName}
                   />
-                </div>
-              )}
+                )}
+              </div>
             </>
           ) : (
             <p className="text-sm text-slate-400 print:hidden">

@@ -12,6 +12,9 @@ import {
 import { listEmployees } from "@/lib/employees/store";
 import { EmployeeRecord } from "@/lib/employees/types";
 import { SectionCard } from "@/components/forms/fields";
+import { PrintGate } from "@/components/preview/PrintGate";
+import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
+import { InquiryForm } from "@/components/forms/InquiryForm";
 import {
   RepresentativeSelectionForm,
   RepresentativeSelectionPreview,
@@ -251,6 +254,7 @@ export default function FormsPage() {
 
         <div className="lg:sticky lg:top-6 lg:self-start print:static print:top-0">
           <p className="mb-3 text-sm font-semibold text-slate-500 print:hidden">서식 미리보기</p>
+          <PrintGate approved={business.approved}>
           {docType === "근로자명부" && (
             <WorkerRegisterPreview
               data={
@@ -405,6 +409,17 @@ export default function FormsPage() {
               estimatedAllowance={dismissalAllowance}
             />
           )}
+          </PrintGate>
+          <div className="mt-4 print:hidden">
+            {business.approved ? (
+              <PrintDownloadButton />
+            ) : (
+              <InquiryForm
+                businessRegistrationNumber={business.businessRegistrationNumber}
+                businessName={business.businessName}
+              />
+            )}
+          </div>
         </div>
       </main>
     </AppShell>

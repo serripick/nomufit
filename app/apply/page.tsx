@@ -35,6 +35,7 @@ import {
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { ContractPreview } from "@/components/preview/ContractPreview";
 import { PrintGate } from "@/components/preview/PrintGate";
+import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 
 const REGISTRATION_NUMBER_PATTERN = /^\d{3}-\d{2}-\d{5}$/;
@@ -441,12 +442,16 @@ export default function ApplyPage() {
           <PrintGate approved={business?.approved ?? false}>
             <ContractPreview data={formData} />
           </PrintGate>
-          {business && !business.approved && (
+          {business && (
             <div className="mt-4 print:hidden">
-              <InquiryForm
-                businessRegistrationNumber={business.businessRegistrationNumber}
-                businessName={business.businessName}
-              />
+              {business.approved ? (
+                <PrintDownloadButton />
+              ) : (
+                <InquiryForm
+                  businessRegistrationNumber={business.businessRegistrationNumber}
+                  businessName={business.businessName}
+                />
+              )}
             </div>
           )}
         </div>
@@ -456,6 +461,7 @@ export default function ApplyPage() {
         <div className="mx-auto max-w-6xl space-y-6 px-4 pb-8 sm:px-6 print:hidden">
           <SectionCard title="연차수당 정산 계산기 (별도 도구, 계약서 내용에는 반영되지 않음)">
             <AnnualLeaveCalculator
+              businessId={business?.id ?? null}
               defaultHireDate={formData.businessInfo.contractStartDate}
               wage={formData.wage}
               employmentPattern={formData.employmentPattern}
