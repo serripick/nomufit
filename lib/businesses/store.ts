@@ -9,6 +9,7 @@ interface BusinessRow {
   business_address: string | null;
   business_phone: string | null;
   five_or_more_employees: boolean;
+  approved: boolean;
 }
 
 function fromRow(row: BusinessRow): BusinessRecord {
@@ -20,6 +21,7 @@ function fromRow(row: BusinessRow): BusinessRecord {
     businessAddress: row.business_address ?? "",
     businessPhone: row.business_phone ?? "",
     fiveOrMoreEmployees: row.five_or_more_employees,
+    approved: row.approved,
   };
 }
 
@@ -68,6 +70,17 @@ export async function listBusinesses(): Promise<BusinessRecord[]> {
 export async function deleteBusiness(id: string): Promise<void> {
   const { error } = await supabase.from("businesses").delete().eq("id", id);
   if (error) throw error;
+}
+
+export async function approveBusiness(id: string, approved: boolean): Promise<BusinessRecord> {
+  const { data, error } = await supabase
+    .from("businesses")
+    .update({ approved, approved_at: approved ? new Date().toISOString() : null })
+    .eq("id", id)
+    .select("*")
+    .single();
+  if (error) throw error;
+  return fromRow(data as BusinessRow);
 }
 
 export async function updateBusiness(

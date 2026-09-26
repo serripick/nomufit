@@ -3,7 +3,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { deleteBusiness } from "@/lib/businesses/store";
+import { approveBusiness, deleteBusiness } from "@/lib/businesses/store";
+import { updateInquiryStatus } from "@/lib/inquiries/store";
+import { InquiryRecord } from "@/lib/inquiries/types";
 
 const ADMIN_COOKIE = "nomufit_admin";
 
@@ -40,5 +42,18 @@ export async function logoutAdmin(): Promise<void> {
 
 export async function deleteBusinessAction(id: string): Promise<void> {
   await deleteBusiness(id);
+  revalidatePath("/admin");
+}
+
+export async function approveBusinessAction(id: string, approved: boolean): Promise<void> {
+  await approveBusiness(id, approved);
+  revalidatePath("/admin");
+}
+
+export async function updateInquiryStatusAction(
+  id: string,
+  status: InquiryRecord["status"]
+): Promise<void> {
+  await updateInquiryStatus(id, status);
   revalidatePath("/admin");
 }

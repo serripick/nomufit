@@ -7,6 +7,7 @@ import { getLastSelectedEmployeeId, setLastSelectedEmployeeId } from "@/lib/empl
 import { computeWageBreakdown } from "@/lib/contract-templates/wage-calc";
 import {
   computeDefaultInsuranceDeductions,
+  isDormitoryDeductionOverReferenceCap,
   sumPayslipDeductions,
 } from "@/lib/contract-templates/payslipCalc";
 import { estimateMonthlyIncomeTax } from "@/lib/contract-templates/incomeTaxEstimate";
@@ -21,6 +22,8 @@ import {
   setStoredBusinessRegNumber,
 } from "@/lib/businesses/currentBusiness";
 import { PayslipPreview } from "@/components/preview/PayslipPreview";
+import { PrintGate } from "@/components/preview/PrintGate";
+import { InquiryForm } from "@/components/forms/InquiryForm";
 
 const now = new Date();
 
@@ -42,6 +45,7 @@ export default function PayslipPage() {
   const [employmentInsurance, setEmploymentInsurance] = useState(0);
   const [incomeTax, setIncomeTax] = useState(0);
   const [localIncomeTax, setLocalIncomeTax] = useState(0);
+  const [dormitoryDeduction, setDormitoryDeduction] = useState(0);
 
   const handleIncomeTaxChange = (value: number) => {
     const safe = Math.max(0, value);
@@ -123,12 +127,21 @@ export default function PayslipPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, dependents]);
 
+  // 숙박비 공제는 4대보험·세금과 무관한 별도 항목이라, 직원을 바꿀 때만 0으로 초기화한다
+  // (부양가족수를 바꾼다고 숙박비 입력값이 날아가면 안 되기 때문).
+  useEffect(() => {
+    setDormitoryDeduction(0);
+  }, [selectedId]);
+
   const deductions = sumPayslipDeductions(
     taxableBase,
     { nationalPension, healthInsurance, longTermCare, employmentInsurance },
     incomeTax,
-    localIncomeTax
+    localIncomeTax,
+    dormitoryDeduction
   );
+  const dormitoryOverCap =
+    breakdown != null && isDormitoryDeductionOverReferenceCap(dormitoryDeduction, breakdown.baseSalary);
 
   if (!businessCheckDone) {
     return (
@@ -316,6 +329,30 @@ export default function PayslipPage() {
                     </p>
                   </div>
                 )}
+
+                <div className="rounded-md bg-slate-50 p-4">
+                  <p className="mb-1 text-sm font-semibold text-slate-800">
+                    숙박비 공제 (숙식 제공 사업장만 해당)
+                  </p>
+                  <p className="mb-3 text-xs text-slate-500">
+                    자동으로 계산해드리지 않습니다 — 숙박비 공제 한도는 전국 공통이 아니라
+                    지방고용노동청이 반기별·지역별·기숙사 형태별로 따로 고시합니다. 실제 약정한
+                    금액을 직접 입력해주세요.
+                  </p>
+                  <FieldLabel>숙박비 공제액 (원)</FieldLabel>
+                  <NumberInput
+                    value={dormitoryDeduction}
+                    min={0}
+                    onChange={(e) => setDormitoryDeduction(Math.max(0, Number(e.target.value)))}
+                  />
+                  {dormitoryOverCap && (
+                    <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      입력하신 금액이 통상임금(기본급)의 20%를 넘었습니다. 이는 참고용
+                      상한선일 뿐이니, 관할 지방고용노동청의 최신 고시로 실제 한도를 반드시
+                      확인해주세요.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </SectionCard>
@@ -326,14 +363,26 @@ export default function PayslipPage() {
             임금명세서 미리보기
           </p>
           {employee && breakdown ? (
-            <PayslipPreview
-              employee={employee}
-              breakdown={breakdown}
-              deductions={deductions}
-              payYear={payYear}
-              payMonth={payMonth}
-              payDay={payDay}
-            />
+            <>
+              <PrintGate approved={business.approved}>
+                <PayslipPreview
+                  employee={employee}
+                  breakdown={breakdown}
+                  deductions={deductions}
+                  payYear={payYear}
+                  payMonth={payMonth}
+                  payDay={payDay}
+                />
+              </PrintGate>
+              {!business.approved && (
+                <div className="mt-4 print:hidden">
+                  <InquiryForm
+                    businessRegistrationNumber={business.businessRegistrationNumber}
+                    businessName={business.businessName}
+                  />
+                </div>
+              )}
+            </>
           ) : (
             <p className="text-sm text-slate-400 print:hidden">
               직원을 선택하면 미리보기가 표시됩니다.

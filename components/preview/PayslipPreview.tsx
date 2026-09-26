@@ -108,6 +108,9 @@ export function PayslipPreview({
               <Row label="고용보험" value={formatCurrency(deductions.employmentInsurance)} />
               <Row label="근로소득세" value={formatCurrency(deductions.incomeTax)} />
               <Row label="지방소득세" value={formatCurrency(deductions.localIncomeTax)} />
+              {deductions.dormitoryDeduction > 0 && (
+                <Row label="숙박비" value={formatCurrency(deductions.dormitoryDeduction)} />
+              )}
               <tr className="bg-slate-50 font-semibold">
                 <td className="border border-slate-300 px-2 py-1.5 print:px-1 print:py-0.5">
                   공제액 계
@@ -138,6 +141,12 @@ export function PayslipPreview({
         <br />
         · 근로소득세는 국세청 간이세액표를 조회하여 직접 입력한 금액이며, 지방소득세는 그 10%로
         자동 계산되었습니다.
+      </p>
+
+      <p className="doc-disclaimer">
+        본 문서는 근로기준법 등 관계 법령을 기준으로 자동 생성되었습니다. 다만 사업장별 특수한
+        사정이 있을 수 있으므로, 실제 적용 전 노무사 등 전문가의 검토를 받으시기를 권장합니다.
+        최종 검토 및 사용에 대한 책임은 이용자 본인에게 있습니다.
       </p>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BusinessRecord } from "@/lib/businesses/types";
-import { deleteBusinessAction, logoutAdmin } from "./actions";
+import { approveBusinessAction, deleteBusinessAction, logoutAdmin } from "./actions";
 
 export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[] }) {
   const [isPending, startTransition] = useTransition();
@@ -18,6 +18,14 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
     setPendingId(id);
     startTransition(async () => {
       await deleteBusinessAction(id);
+      setPendingId(null);
+    });
+  };
+
+  const handleToggleApprove = (id: string, approved: boolean) => {
+    setPendingId(id);
+    startTransition(async () => {
+      await approveBusinessAction(id, approved);
       setPendingId(null);
     });
   };
@@ -45,6 +53,7 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
                 <th className="px-4 py-3 whitespace-nowrap">사업장명</th>
                 <th className="px-4 py-3 whitespace-nowrap">사업자등록번호</th>
                 <th className="px-4 py-3 whitespace-nowrap">대표자</th>
+                <th className="px-4 py-3 whitespace-nowrap">상태</th>
                 <th className="px-4 py-3 text-right whitespace-nowrap">관리</th>
               </tr>
             </thead>
@@ -60,14 +69,36 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
                   <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
                     {b.representativeName || "-"}
                   </td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {b.approved ? (
+                      <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
+                        승인됨
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-500">
+                        미승인
+                      </span>
+                    )}
+                  </td>
+                  <td className="space-x-3 px-4 py-3 text-right whitespace-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleApprove(b.id, !b.approved)}
+                      disabled={isPending && pendingId === b.id}
+                      className={
+                        "hover:underline disabled:opacity-50 " +
+                        (b.approved ? "text-slate-500" : "text-blue-600")
+                      }
+                    >
+                      {isPending && pendingId === b.id ? "처리 중..." : b.approved ? "승인 취소" : "승인"}
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(b.id, b.businessName)}
                       disabled={isPending && pendingId === b.id}
                       className="text-red-600 hover:underline disabled:opacity-50"
                     >
-                      {isPending && pendingId === b.id ? "삭제 중..." : "삭제"}
+                      삭제
                     </button>
                   </td>
                 </tr>

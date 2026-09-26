@@ -15,7 +15,23 @@ export interface PayslipDeductions extends InsuranceDeductions {
   taxableBase: number;
   incomeTax: number;
   localIncomeTax: number;
+  /** 숙식 제공 사업장에서 숙박비를 공제하는 경우. 상한이 지방고용노동청별·반기별 고시로
+   * 정해지므로 이 프로그램은 금액을 자동 계산하지 않고, 입력값이 참고용 상한을 넘는지만 경고한다. */
+  dormitoryDeduction: number;
   totalDeduction: number;
+}
+
+/** 숙박비 공제 한도는 전국 공통 고정값이 아니라 지방고용노동청이 반기별·지역별·기숙사
+ * 형태별로 따로 고시한다. 이 값은 "이 정도면 한도를 넘었을 가능성이 있다"고 알려주기 위한
+ * 참고용 상한일 뿐, 실제 한도가 아니다. 정확한 한도는 관할 지방고용노동청 고시를 확인해야 한다. */
+export const DORMITORY_DEDUCTION_REFERENCE_CAP_RATE = 0.2;
+
+export function isDormitoryDeductionOverReferenceCap(
+  dormitoryDeduction: number,
+  ordinaryMonthlyWage: number
+): boolean {
+  if (dormitoryDeduction <= 0 || ordinaryMonthlyWage <= 0) return false;
+  return dormitoryDeduction > ordinaryMonthlyWage * DORMITORY_DEDUCTION_REFERENCE_CAP_RATE;
 }
 
 /**
@@ -39,7 +55,8 @@ export function sumPayslipDeductions(
   taxableBase: number,
   insurance: InsuranceDeductions,
   incomeTax: number,
-  localIncomeTax: number
+  localIncomeTax: number,
+  dormitoryDeduction: number = 0
 ): PayslipDeductions {
   const safe = (v: number) => Math.max(0, v);
   const totalDeduction =
@@ -48,7 +65,8 @@ export function sumPayslipDeductions(
     safe(insurance.longTermCare) +
     safe(insurance.employmentInsurance) +
     safe(incomeTax) +
-    safe(localIncomeTax);
+    safe(localIncomeTax) +
+    safe(dormitoryDeduction);
 
   return {
     taxableBase,
@@ -58,6 +76,7 @@ export function sumPayslipDeductions(
     employmentInsurance: safe(insurance.employmentInsurance),
     incomeTax: safe(incomeTax),
     localIncomeTax: safe(localIncomeTax),
+    dormitoryDeduction: safe(dormitoryDeduction),
     totalDeduction,
   };
 }

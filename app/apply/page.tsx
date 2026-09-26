@@ -30,6 +30,8 @@ import {
 } from "@/lib/businesses/currentBusiness";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { ContractPreview } from "@/components/preview/ContractPreview";
+import { PrintGate } from "@/components/preview/PrintGate";
+import { InquiryForm } from "@/components/forms/InquiryForm";
 
 interface Draft {
   formData: ContractFormData;
@@ -374,7 +376,17 @@ export default function ApplyPage() {
 
         <div className="lg:sticky lg:top-6 lg:self-start print:static print:top-0">
           <p className="mb-3 text-sm font-semibold text-slate-500 print:hidden">계약서 미리보기</p>
-          <ContractPreview data={formData} />
+          <PrintGate approved={business.approved}>
+            <ContractPreview data={formData} />
+          </PrintGate>
+          {!business.approved && (
+            <div className="mt-4 print:hidden">
+              <InquiryForm
+                businessRegistrationNumber={business.businessRegistrationNumber}
+                businessName={business.businessName}
+              />
+            </div>
+          )}
         </div>
       </main>
 

@@ -146,3 +146,21 @@ button:disabled { cursor: not-allowed; }
 @page { size: A4; margin: 8mm 10mm; }
 @media print { body { background: #fff; color: #000; }.app-sidebar, .app-topbar, .mobile-nav, .skip-link { display: none !important; }.app-body { margin: 0; padding: 0; }.app-main { padding: 0; }.app-shell { min-height: 0; } }
 @media (min-width: 901px) and (max-height: 800px) { .sidebar-bottom { padding-top: 20px; }.sidebar-note { padding: 18px 18px 20px; }.sidebar-note h3 { font-size: 16px; line-height: 1.4; }.sidebar-note h3 strong { font-size: 22px; }.note-line { margin-top: 12px; } }
+
+/* 미승인 사업장의 완성 문서: 화면에는 워터마크와 함께 자유롭게 보이되, 인쇄 시엔 안내문구로 대체된다. */
+.doc-watermark { position: relative; }
+.doc-watermark::after {
+  content: "정식 이용 신청 전 미리보기";
+  position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 30px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.5;
+  color: rgba(16, 45, 83, 0.14); transform: rotate(-22deg);
+}
+.doc-print-lock { display: none; }
+@media print {
+  .doc-watermark::after { display: none; }
+  .doc-watermark .doc-print-content { display: none !important; }
+  .doc-watermark .doc-print-lock { display: block; padding: 120px 24px; text-align: center; font-size: 15px; line-height: 2; color: #333; }
+}
+.doc-disclaimer { margin-top: 14px; padding: 10px 12px; border-radius: 8px; background: #f4f7fb; font-size: 11px; line-height: 1.7; color: #5c7091; }
+@media print { .doc-disclaimer { background: none; border-top: 1px solid #ccc; border-radius: 0; padding-top: 8px; } }
