@@ -25,10 +25,12 @@ import { PayslipPreview } from "@/components/preview/PayslipPreview";
 import { PrintGate } from "@/components/preview/PrintGate";
 import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
 import { InquiryForm } from "@/components/forms/InquiryForm";
+import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 
 const now = new Date();
 
 export default function PayslipPage() {
+  const isAdmin = useIsAdmin();
   const [business, setBusiness] = useState<BusinessRecord | null>(null);
   const [businessCheckDone, setBusinessCheckDone] = useState(false);
 
@@ -365,7 +367,7 @@ export default function PayslipPage() {
           </p>
           {employee && breakdown ? (
             <>
-              <PrintGate approved={business.approved}>
+              <PrintGate approved={isAdmin || business.approved}>
                 <PayslipPreview
                   employee={employee}
                   breakdown={breakdown}
@@ -376,7 +378,7 @@ export default function PayslipPage() {
                 />
               </PrintGate>
               <div className="mt-4 print:hidden">
-                {business.approved ? (
+                {isAdmin || business.approved ? (
                   <PrintDownloadButton />
                 ) : (
                   <InquiryForm

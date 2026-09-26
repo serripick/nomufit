@@ -28,7 +28,9 @@ export async function loginAdmin(
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    path: "/admin",
+    // "/"로 열어둬야 /apply, /payslip, /forms 등 고객 페이지에서도 관리자 여부를 확인할 수 있다
+    // (거기서 관리자는 승인 여부와 무관하게 항상 출력이 허용된다).
+    path: "/",
     maxAge: 60 * 60 * 12,
   });
   redirect("/admin");
@@ -36,7 +38,7 @@ export async function loginAdmin(
 
 export async function logoutAdmin(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(ADMIN_COOKIE);
+  cookieStore.delete({ name: ADMIN_COOKIE, path: "/" });
   redirect("/admin");
 }
 

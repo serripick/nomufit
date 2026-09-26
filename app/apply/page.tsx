@@ -37,6 +37,7 @@ import { ContractPreview } from "@/components/preview/ContractPreview";
 import { PrintGate } from "@/components/preview/PrintGate";
 import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
 import { InquiryForm } from "@/components/forms/InquiryForm";
+import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 
 const REGISTRATION_NUMBER_PATTERN = /^\d{3}-\d{2}-\d{5}$/;
 
@@ -79,6 +80,7 @@ function applyBusinessToFormData(
 }
 
 export default function ApplyPage() {
+  const isAdmin = useIsAdmin();
   const [business, setBusiness] = useState<BusinessRecord | null>(null);
   const [businessCheckDone, setBusinessCheckDone] = useState(false);
 
@@ -439,12 +441,12 @@ export default function ApplyPage() {
 
         <div className="lg:sticky lg:top-6 lg:self-start print:static print:top-0">
           <p className="mb-3 text-sm font-semibold text-slate-500 print:hidden">계약서 미리보기</p>
-          <PrintGate approved={business?.approved ?? false}>
+          <PrintGate approved={isAdmin || (business?.approved ?? false)}>
             <ContractPreview data={formData} />
           </PrintGate>
           {business && (
             <div className="mt-4 print:hidden">
-              {business.approved ? (
+              {isAdmin || business.approved ? (
                 <PrintDownloadButton />
               ) : (
                 <InquiryForm

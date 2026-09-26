@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BusinessRecord } from "@/lib/businesses/types";
+import { setStoredBusinessRegNumber } from "@/lib/businesses/currentBusiness";
 import { approveBusinessAction, deleteBusinessAction, logoutAdmin } from "./actions";
 
 export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[] }) {
@@ -20,6 +21,11 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
       await deleteBusinessAction(id);
       setPendingId(null);
     });
+  };
+
+  const handleOpen = (regNumber: string) => {
+    setStoredBusinessRegNumber(regNumber);
+    window.open("/apply", "_blank");
   };
 
   const handleToggleApprove = (id: string, approved: boolean) => {
@@ -81,6 +87,13 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
                     )}
                   </td>
                   <td className="space-x-3 px-4 py-3 text-right whitespace-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => handleOpen(b.businessRegistrationNumber)}
+                      className="text-emerald-600 hover:underline"
+                    >
+                      열기
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleToggleApprove(b.id, !b.approved)}
