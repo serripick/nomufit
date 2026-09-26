@@ -6,12 +6,15 @@ import { formatPhoneNumber } from "@/lib/contract-templates/inputFormatters";
 import { FieldLabel, TextInput } from "./fields";
 
 export function InquiryForm({
-  businessRegistrationNumber,
-  businessName,
+  businessRegistrationNumber = "",
+  businessName = "",
 }: {
-  businessRegistrationNumber: string;
-  businessName: string;
+  /** 특정 사업장의 출력 승인 문의일 때만 전달한다. 없으면(예: 홈 화면 일반 문의) 사업장
+   * 정보 없이 접수되는 일반 상담 문의로 취급한다. */
+  businessRegistrationNumber?: string;
+  businessName?: string;
 }) {
+  const hasBusiness = Boolean(businessRegistrationNumber);
   const [contactName, setContactName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [message, setMessage] = useState("");
@@ -54,10 +57,13 @@ export function InquiryForm({
       className="space-y-3 rounded-md border border-blue-200 bg-blue-50 p-4 print:hidden"
     >
       <div>
-        <p className="text-sm font-semibold text-slate-900">정식 이용(저장 문서 출력)을 신청하시겠어요?</p>
+        <p className="text-sm font-semibold text-slate-900">
+          {hasBusiness ? "정식 이용(저장 문서 출력)을 신청하시겠어요?" : "노무핏 도입/이용이 궁금하신가요?"}
+        </p>
         <p className="mt-1 text-xs text-slate-600">
-          담당자 연락처를 남겨주시면 확인 후 이용 방법을 안내해드립니다. 입력해주신 사업장 정보는
-          이미 저장되어 있어 다시 입력하실 필요는 없습니다.
+          {hasBusiness
+            ? "담당자 연락처를 남겨주시면 확인 후 이용 방법을 안내해드립니다. 입력해주신 사업장 정보는 이미 저장되어 있어 다시 입력하실 필요는 없습니다."
+            : "담당자 연락처를 남겨주시면 확인 후 이용 방법과 요금을 안내해드립니다."}
         </p>
         <p className="mt-2 rounded-md bg-white px-3 py-2 text-xs font-medium text-blue-700">
           이용요금: 월 29,000원 · 연간 결제 시 240,000원 (약 31% 할인)
@@ -102,7 +108,7 @@ export function InquiryForm({
         disabled={status === "sending"}
         className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
       >
-        {status === "sending" ? "접수 중..." : "이용 신청하기"}
+        {status === "sending" ? "접수 중..." : hasBusiness ? "이용 신청하기" : "문의하기"}
       </button>
     </form>
   );

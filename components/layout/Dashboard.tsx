@@ -52,7 +52,7 @@ export default function Dashboard() {
           <p className="hero-label">사업장의 노무, <strong>딱 맞게.</strong></p>
           <h1 id="welcome-title">복잡한 노무 업무,<br /><span>노무핏</span> 하나로 충분합니다.</h1>
           <p className="hero-description">근로계약서부터 임금대장, 고용지원금, 노무서식까지<br className="desktop-break" /> 한 번의 입력으로 간편하게 이어가세요.</p>
-          <div className="hero-actions"><Link href="/apply" className="primary-link">지금 시작하기 <span aria-hidden="true">→</span></Link><Link href="/forms" className="secondary-link">노무서식 보기</Link></div>
+          <div className="hero-actions"><Link href="/apply" className="primary-link">지금 시작하기 <span aria-hidden="true">→</span></Link><Link href="/forms" className="secondary-link">노무서식 보기</Link><Link href="/contact" className="secondary-link">이용문의</Link></div>
           <ul className="hero-benefits"><li><span aria-hidden="true">✓</span>사업장 정보 연동</li><li><span aria-hidden="true">◷</span>반복 업무는 간결하게</li><li><span aria-hidden="true">▤</span>문서 미리보기·출력</li></ul>
         </div>
         <div className="hero-visual" aria-hidden="true">
