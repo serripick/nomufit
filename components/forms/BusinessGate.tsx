@@ -63,7 +63,7 @@ export function BusinessGate({
           <FieldLabel>사업자등록번호</FieldLabel>
           <TextInput
             value={regNumber}
-            placeholder="326-87-03180"
+            placeholder="123-45-67890"
             onChange={(e) => {
               setStatus("idle");
               setRegNumber(formatBusinessRegistrationNumber(e.target.value));

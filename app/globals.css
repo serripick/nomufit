@@ -117,6 +117,8 @@ button:disabled { cursor: not-allowed; }
 .page-heading { max-width: 1280px; margin: auto; padding: 34px 32px 27px; border-bottom: 1px solid var(--line); background: linear-gradient(110deg,#f1f8ff,#f8fcff); }.page-heading .eyebrow { color: #498ebf; }.page-heading h1 { font-size: 29px; font-weight: 800; letter-spacing: -1px; margin: 9px 0; }.heading-dot { color: #00c6b0; }.page-heading>p:last-child { font-size: 13px; line-height: 1.9; color: #657f9c; max-width: 700px; }
 .business-gate { max-width: 520px; margin: 0 auto; padding: 44px 20px 70px; }.business-gate-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 34px; box-shadow: 0 12px 40px #22599208; }.business-gate-card::before { content: ""; display: block; width: 124px; height: 45px; background: url('/images/nomufit-logo.svg') left center / contain no-repeat; margin-bottom: 22px; }.business-gate-card>p { line-height: 1.9; }
 @keyframes arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes attention-ring { 0%, 100% { box-shadow: 0 0 0 0 #0086ed66; } 50% { box-shadow: 0 0 0 6px #0086ed00; } }
+.doc-type-attention { animation: attention-ring 1.4s ease-in-out infinite; border-color: #0086ed !important; }
 /* Form styles apply only on screen. Calculation, input, and print content are unchanged. */
 @media screen {
   .app-main .section-card { border: 1px solid #dfe9f5; border-radius: 15px; box-shadow: 0 3px 14px #1e568605; }

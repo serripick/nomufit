@@ -70,6 +70,7 @@ export default function FormsPage() {
   const [businessCheckDone, setBusinessCheckDone] = useState(false);
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
   const [docType, setDocType] = useState<DocType>(DOC_TYPES[0]);
+  const [docTypeChosen, setDocTypeChosen] = useState(false);
 
   const [repSelectionData, setRepSelectionData] = useState<RepresentativeSelectionData | null>(null);
   const [leaveSubData, setLeaveSubData] = useState<LeaveSubstitutionData | null>(null);
@@ -157,9 +158,15 @@ export default function FormsPage() {
         <div className="space-y-6 print:hidden">
           <SectionCard title="서식 종류 선택">
             <select
-              className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className={
+                "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" +
+                (docTypeChosen ? "" : " doc-type-attention")
+              }
               value={docType}
-              onChange={(e) => setDocType(e.target.value as DocType)}
+              onChange={(e) => {
+                setDocType(e.target.value as DocType);
+                setDocTypeChosen(true);
+              }}
             >
               {DOC_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -167,6 +174,11 @@ export default function FormsPage() {
                 </option>
               ))}
             </select>
+            {!docTypeChosen && (
+              <p className="mt-2 text-xs text-blue-600">
+                작성하실 서식을 선택해주세요. (기본값: 근로자명부)
+              </p>
+            )}
           </SectionCard>
 
           <SectionCard title={docType}>

@@ -2,6 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createDefaultFormData } from "@/lib/contract-templates/defaults";
+import {
+  EXAMPLE_BUSINESS_REGISTRATION_NUMBER,
+  createExampleFormData,
+} from "@/lib/contract-templates/exampleData";
 import { contractFormSchema } from "@/lib/contract-templates/schemas";
 import { ContractFormData } from "@/lib/contract-templates/types";
 import { SectionCard } from "@/components/forms/fields";
@@ -18,9 +22,9 @@ import { AnnualLeaveCalculator } from "@/components/forms/AnnualLeaveCalculator"
 import { EmployeeRoster } from "@/components/forms/EmployeeRoster";
 import { EmployeeRecord } from "@/lib/employees/types";
 import { setLastSelectedEmployeeId } from "@/lib/employees/lastSelected";
-import { BusinessGate } from "@/components/forms/BusinessGate";
 import { BusinessRecord } from "@/lib/businesses/types";
 import {
+  createBusiness,
   findBusinessByRegistrationNumber,
   updateBusiness,
 } from "@/lib/businesses/store";
@@ -32,6 +36,8 @@ import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { ContractPreview } from "@/components/preview/ContractPreview";
 import { PrintGate } from "@/components/preview/PrintGate";
 import { InquiryForm } from "@/components/forms/InquiryForm";
+
+const REGISTRATION_NUMBER_PATTERN = /^\d{3}-\d{2}-\d{5}$/;
 
 interface Draft {
   formData: ContractFormData;
@@ -75,11 +81,12 @@ export default function ApplyPage() {
   const [business, setBusiness] = useState<BusinessRecord | null>(null);
   const [businessCheckDone, setBusinessCheckDone] = useState(false);
 
-  const [formData, setFormData] = useState<ContractFormData>(() => createDefaultFormData());
+  const [formData, setFormData] = useState<ContractFormData>(() => createExampleFormData());
   const [loadedEmployeeId, setLoadedEmployeeId] = useState<string | null>(null);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<"contract" | "calculator">("contract");
   const businessSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const justCreatedRef = useRef(false);
 
   // 다른 화면에서 /apply#calculator로 들어오면 연차수당 계산기 탭을 바로 연다.
   useEffect(() => {
@@ -103,9 +110,57 @@ export default function ApplyPage() {
       .finally(() => setBusinessCheckDone(true));
   }, []);
 
+  // 사업자등록번호 칸에 예시가 아닌 "완성된" 실제 번호가 입력되면, 별도의 조회 버튼 없이
+  // 자동으로 기존 사업장을 불러오거나(있으면) 새로 등록한다(없으면).
+  useEffect(() => {
+    const regNumber = formData.businessInfo.businessRegistrationNumber;
+    if (!REGISTRATION_NUMBER_PATTERN.test(regNumber)) return;
+    if (regNumber === EXAMPLE_BUSINESS_REGISTRATION_NUMBER) return;
+    if (business?.businessRegistrationNumber === regNumber) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const found = await findBusinessByRegistrationNumber(regNumber);
+        if (cancelled) return;
+        if (found) {
+          setBusiness(found);
+          setStoredBusinessRegNumber(found.businessRegistrationNumber);
+        } else {
+          const { businessName, representativeName, businessAddress, businessPhone, fiveOrMoreEmployees } =
+            formData.businessInfo;
+          const created = await createBusiness({
+            businessRegistrationNumber: regNumber,
+            businessName,
+            representativeName,
+            businessAddress,
+            businessPhone,
+            fiveOrMoreEmployees,
+          });
+          if (cancelled) return;
+          justCreatedRef.current = true;
+          setBusiness(created);
+          setStoredBusinessRegNumber(created.businessRegistrationNumber);
+        }
+      } catch {
+        // 조회/등록에 실패해도(네트워크 등) 입력 자체는 막지 않는다 — 다음 변경 때 다시 시도된다.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.businessInfo.businessRegistrationNumber]);
+
   // 사업장이 정해지면, 그 사업장 전용 임시 저장 초안을 불러오거나 없으면 기본값+사업장 정보로 시작한다.
+  // 다만 방금 예시 화면에서 실제 번호를 입력해 막 등록된 경우라면, 입력 중이던 내용을 그대로 둔다.
   useEffect(() => {
     if (!business) return;
+    if (justCreatedRef.current) {
+      justCreatedRef.current = false;
+      setDraftLoaded(true);
+      return;
+    }
     const draft = loadDraft(business.id);
     if (draft) {
       setFormData(draft.formData);
@@ -163,6 +218,7 @@ export default function ApplyPage() {
   ]);
 
   const validation = useMemo(() => contractFormSchema.safeParse(formData), [formData]);
+  const isExample = !business;
 
   const handleLoadEmployee = (record: EmployeeRecord) => {
     setFormData({
@@ -206,11 +262,11 @@ export default function ApplyPage() {
     if (business) setLastSelectedEmployeeId(business.id, null);
   };
 
-  const handleSwitchBusiness = () => {
+  const handleResetToExample = () => {
     setStoredBusinessRegNumber(null);
     setBusiness(null);
     setDraftLoaded(false);
-    setFormData(createDefaultFormData());
+    setFormData(createExampleFormData());
     setLoadedEmployeeId(null);
   };
 
@@ -222,18 +278,6 @@ export default function ApplyPage() {
     );
   }
 
-  if (!business) {
-    return (
-      <AppShell>
-        <PageHeading
-          title="근로계약서 작성 정보 입력"
-          description="사업장별로 정보와 직원 현황이 분리되어 관리됩니다. 먼저 사업자등록번호로 사업장을 조회하거나 새로 등록해주세요."
-        />
-        <BusinessGate onBusinessLoaded={setBusiness} />
-      </AppShell>
-    );
-  }
-
   return (
     <AppShell>
       <PageHeading
@@ -241,20 +285,32 @@ export default function ApplyPage() {
         description="사업장 정보와 근로조건을 입력하면 계약서 초안이 우측에 자동으로 미리보기 됩니다. 이 화면은 검토 전 미리보기이며, 실제 계약서 발급은 상담사 검토 후 진행됩니다."
       />
 
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
-        <span>
-          현재 사업장: <span className="font-semibold text-slate-900">
-            {business.businessName || "(상호 미입력)"}
-          </span>{" "}
-          ({business.businessRegistrationNumber})
-        </span>
-        <button
-          type="button"
-          onClick={handleSwitchBusiness}
-          className="text-blue-600 hover:underline"
-        >
-          다른 사업장으로 전환
-        </button>
+      <div className="mx-auto max-w-6xl px-4 pt-4 text-sm sm:px-6 print:hidden">
+        {isExample ? (
+          <div className="flex items-center justify-between rounded-md bg-blue-50 px-4 py-3 text-blue-800">
+            <span>
+              지금 보이는 내용은 <strong>예시 데이터</strong>입니다. 우리 사업장의 근로계약서가
+              궁금하다면, 아래 사업자등록번호를 실제 정보로 바꿔 입력해보세요.
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between text-slate-600">
+            <span>
+              현재 사업장:{" "}
+              <span className="font-semibold text-slate-900">
+                {business.businessName || "(상호 미입력)"}
+              </span>{" "}
+              ({business.businessRegistrationNumber})
+            </span>
+            <button
+              type="button"
+              onClick={handleResetToExample}
+              className="text-blue-600 hover:underline"
+            >
+              예시로 초기화
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="mx-auto max-w-6xl px-4 pt-4 sm:px-6 print:hidden">
@@ -293,19 +349,25 @@ export default function ApplyPage() {
         }
       >
         <div className="space-y-6 print:hidden">
-          <SectionCard title="직원 현황표">
-            <EmployeeRoster
-              businessId={business.id}
-              formData={formData}
-              loadedEmployeeId={loadedEmployeeId}
-              onLoadEmployee={handleLoadEmployee}
-              onSavedEmployee={(id) => {
-                setLoadedEmployeeId(id);
-                setLastSelectedEmployeeId(business.id, id);
-              }}
-              onStartNew={handleStartNewEmployee}
-            />
-          </SectionCard>
+          {business ? (
+            <SectionCard title="직원 현황표">
+              <EmployeeRoster
+                businessId={business.id}
+                formData={formData}
+                loadedEmployeeId={loadedEmployeeId}
+                onLoadEmployee={handleLoadEmployee}
+                onSavedEmployee={(id) => {
+                  setLoadedEmployeeId(id);
+                  setLastSelectedEmployeeId(business.id, id);
+                }}
+                onStartNew={handleStartNewEmployee}
+              />
+            </SectionCard>
+          ) : (
+            <p className="rounded-md border border-dashed border-slate-300 p-4 text-xs text-slate-500">
+              사업자등록번호를 실제 정보로 입력하면, 여기서 직원 현황표를 저장·관리할 수 있습니다.
+            </p>
+          )}
 
           <SectionCard title="사업자 및 근로자 기본정보">
             <BusinessInfoFields
@@ -376,10 +438,10 @@ export default function ApplyPage() {
 
         <div className="lg:sticky lg:top-6 lg:self-start print:static print:top-0">
           <p className="mb-3 text-sm font-semibold text-slate-500 print:hidden">계약서 미리보기</p>
-          <PrintGate approved={business.approved}>
+          <PrintGate approved={business?.approved ?? false}>
             <ContractPreview data={formData} />
           </PrintGate>
-          {!business.approved && (
+          {business && !business.approved && (
             <div className="mt-4 print:hidden">
               <InquiryForm
                 businessRegistrationNumber={business.businessRegistrationNumber}

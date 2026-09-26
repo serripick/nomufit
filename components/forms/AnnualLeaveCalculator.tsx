@@ -25,6 +25,7 @@ export function AnnualLeaveCalculator({
   const [hireDateOverride, setHireDateOverride] = useState<string | null>(null);
   const [asOfDateOverride, setAsOfDateOverride] = useState<string | null>(null);
   const [usedDays, setUsedDays] = useState(0);
+  const [usedDaysConfirmed, setUsedDaysConfirmed] = useState(false);
 
   const hireDate = hireDateOverride ?? defaultHireDate;
   const asOfDate = asOfDateOverride ?? todayString();
@@ -69,15 +70,30 @@ export function AnnualLeaveCalculator({
           />
         </div>
         <div>
-          <FieldLabel>연차 사용일수</FieldLabel>
+          <FieldLabel>연차 사용일수 (실제로 쉰 날짜만)</FieldLabel>
           <NumberInput
             value={usedDays}
             min={0}
             step={0.5}
-            onChange={(e) => setUsedDays(Number(e.target.value))}
+            onChange={(e) => {
+              setUsedDays(Number(e.target.value));
+              setUsedDaysConfirmed(true);
+            }}
+            className={usedDaysConfirmed ? "" : "doc-type-attention"}
           />
+          <p className="mt-1 text-[11px] text-slate-500">
+            선지급된 연차수당(포괄임금 항목)은 아래 계산에 이미 자동으로 별도 차감되어 있으니,
+            여기에는 실제로 쉰 연차일수만 입력하세요.
+          </p>
         </div>
       </div>
+
+      {!usedDaysConfirmed && (
+        <p className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          연차 사용일수를 확인 후 입력해주세요. 확인하지 않고 0일로 그대로 정산하면 실제 사용한
+          연차가 있어도 반영되지 않아 수당이 과다 계산될 수 있습니다.
+        </p>
+      )}
 
       <div className="space-y-1 rounded-md bg-blue-50 px-4 py-3 text-xs text-blue-900">
         <p>
