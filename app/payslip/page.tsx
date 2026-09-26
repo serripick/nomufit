@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { listEmployees } from "@/lib/employees/store";
+import * as adminBusinessApi from "@/lib/admin/adminBusinessApi";
 import { EmployeeRecord } from "@/lib/employees/types";
 import { getLastSelectedEmployeeId, setLastSelectedEmployeeId } from "@/lib/employees/lastSelected";
 import { computeWageBreakdown } from "@/lib/contract-templates/wage-calc";
@@ -16,7 +18,8 @@ import { FieldLabel, NumberInput, SectionCard } from "@/components/forms/fields"
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { BusinessGate } from "@/components/forms/BusinessGate";
 import { BusinessRecord } from "@/lib/businesses/types";
-import { findBusinessByRegistrationNumber } from "@/lib/businesses/store";
+import { listMyBusinesses } from "@/lib/businesses/store";
+import { ensureSession } from "@/lib/supabase/session";
 import {
   getStoredBusinessRegNumber,
   setStoredBusinessRegNumber,
@@ -30,7 +33,23 @@ import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 const now = new Date();
 
 export default function PayslipPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppShell>
+          <PageHeading title="임금명세서 생성" description="불러오는 중입니다..." />
+        </AppShell>
+      }
+    >
+      <PayslipPageContent />
+    </Suspense>
+  );
+}
+
+function PayslipPageContent() {
   const isAdmin = useIsAdmin();
+  const searchParams = useSearchParams();
+  const adminBusinessId = isAdmin ? searchParams.get("adminBusinessId") : null;
   const [business, setBusiness] = useState<BusinessRecord | null>(null);
   const [businessCheckDone, setBusinessCheckDone] = useState(false);
 
@@ -57,23 +76,39 @@ export default function PayslipPage() {
   };
 
   useEffect(() => {
-    const savedRegNumber = getStoredBusinessRegNumber();
-    if (!savedRegNumber) {
-      setBusinessCheckDone(true);
+    if (adminBusinessId) {
+      adminBusinessApi
+        .getBusiness(adminBusinessId)
+        .then(setBusiness)
+        .finally(() => setBusinessCheckDone(true));
       return;
     }
-    findBusinessByRegistrationNumber(savedRegNumber)
-      .then((found) => {
-        if (found) setBusiness(found);
-        else setStoredBusinessRegNumber(null);
-      })
-      .finally(() => setBusinessCheckDone(true));
-  }, []);
+    (async () => {
+      try {
+        await ensureSession();
+        const mine = await listMyBusinesses();
+        if (mine.length === 0) {
+          setStoredBusinessRegNumber(null);
+          return;
+        }
+        const savedRegNumber = getStoredBusinessRegNumber();
+        const match =
+          mine.find((b) => b.businessRegistrationNumber === savedRegNumber) ?? mine[0];
+        setBusiness(match);
+        setStoredBusinessRegNumber(match.businessRegistrationNumber);
+      } catch {
+        // 세션 생성 실패 시에는 사업장 조회/등록 화면으로 진행한다.
+      } finally {
+        setBusinessCheckDone(true);
+      }
+    })();
+  }, [adminBusinessId]);
 
   useEffect(() => {
     if (!business) return;
     setStatus("loading");
-    listEmployees(business.id)
+    const load = adminBusinessId ? adminBusinessApi.listEmployees : listEmployees;
+    load(business.id)
       .then((rows) => {
         setEmployees(rows);
         setStatus("idle");
@@ -87,7 +122,7 @@ export default function PayslipPage() {
         setErrorMessage(e instanceof Error ? e.message : "직원 목록을 불러오지 못했습니다.");
         setStatus("error");
       });
-  }, [business]);
+  }, [business, adminBusinessId]);
 
   const handleSwitchBusiness = () => {
     setStoredBusinessRegNumber(null);
@@ -154,6 +189,14 @@ export default function PayslipPage() {
     );
   }
 
+  if (!business && adminBusinessId) {
+    return (
+      <AppShell>
+        <PageHeading title="임금명세서 생성" description="해당 사업장을 찾을 수 없습니다." />
+      </AppShell>
+    );
+  }
+
   if (!business) {
     return (
       <AppShell>
@@ -173,22 +216,33 @@ export default function PayslipPage() {
         description="직원 현황표에서 등록한 직원을 선택하면 근로계약서와 같은 기준으로 임금이 자동 계산되고, 4대보험료도 2026년 요율로 함께 계산됩니다."
       />
 
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
-        <span>
-          현재 사업장:{" "}
-          <span className="font-semibold text-slate-900">
-            {business.businessName || "(상호 미입력)"}
-          </span>{" "}
-          ({business.businessRegistrationNumber})
-        </span>
-        <button
-          type="button"
-          onClick={handleSwitchBusiness}
-          className="text-blue-600 hover:underline"
-        >
-          다른 사업장으로 전환
-        </button>
-      </div>
+      {adminBusinessId ? (
+        <div className="mx-auto max-w-6xl px-4 pt-4 text-sm sm:px-6 print:hidden">
+          <div className="rounded-md bg-emerald-50 px-4 py-3 text-emerald-800">
+            관리자 열람 모드:{" "}
+            <span className="font-semibold">{business.businessName || "(상호 미입력)"}</span> (
+            {business.businessRegistrationNumber}) — 승인 여부와 무관하게 자유롭게 수정·출력할 수
+            있습니다.
+          </div>
+        </div>
+      ) : (
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
+          <span>
+            현재 사업장:{" "}
+            <span className="font-semibold text-slate-900">
+              {business.businessName || "(상호 미입력)"}
+            </span>{" "}
+            ({business.businessRegistrationNumber})
+          </span>
+          <button
+            type="button"
+            onClick={handleSwitchBusiness}
+            className="text-blue-600 hover:underline"
+          >
+            다른 사업장으로 전환
+          </button>
+        </div>
+      )}
 
       <main className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 print:block print:max-w-none print:gap-0 print:p-0 lg:grid-cols-2">
         <div className="space-y-6 print:hidden">

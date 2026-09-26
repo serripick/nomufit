@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { BusinessGate } from "@/components/forms/BusinessGate";
 import { BusinessRecord } from "@/lib/businesses/types";
-import { findBusinessByRegistrationNumber } from "@/lib/businesses/store";
+import { listMyBusinesses } from "@/lib/businesses/store";
+import { ensureSession } from "@/lib/supabase/session";
+import * as adminBusinessApi from "@/lib/admin/adminBusinessApi";
 import {
   getStoredBusinessRegNumber,
   setStoredBusinessRegNumber,
@@ -70,7 +73,23 @@ const DOC_TYPES = [
 type DocType = (typeof DOC_TYPES)[number];
 
 export default function FormsPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppShell>
+          <PageHeading title="노무서식" description="불러오는 중입니다..." />
+        </AppShell>
+      }
+    >
+      <FormsPageContent />
+    </Suspense>
+  );
+}
+
+function FormsPageContent() {
   const isAdmin = useIsAdmin();
+  const searchParams = useSearchParams();
+  const adminBusinessId = isAdmin ? searchParams.get("adminBusinessId") : null;
   const [business, setBusiness] = useState<BusinessRecord | null>(null);
   const [businessCheckDone, setBusinessCheckDone] = useState(false);
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
@@ -89,25 +108,41 @@ export default function FormsPage() {
   const [settlementData, setSettlementData] = useState<RetirementSettlementData | null>(null);
 
   useEffect(() => {
-    const savedRegNumber = getStoredBusinessRegNumber();
-    if (!savedRegNumber) {
-      setBusinessCheckDone(true);
+    if (adminBusinessId) {
+      adminBusinessApi
+        .getBusiness(adminBusinessId)
+        .then(setBusiness)
+        .finally(() => setBusinessCheckDone(true));
       return;
     }
-    findBusinessByRegistrationNumber(savedRegNumber)
-      .then((found) => {
-        if (found) setBusiness(found);
-        else setStoredBusinessRegNumber(null);
-      })
-      .finally(() => setBusinessCheckDone(true));
-  }, []);
+    (async () => {
+      try {
+        await ensureSession();
+        const mine = await listMyBusinesses();
+        if (mine.length === 0) {
+          setStoredBusinessRegNumber(null);
+          return;
+        }
+        const savedRegNumber = getStoredBusinessRegNumber();
+        const match =
+          mine.find((b) => b.businessRegistrationNumber === savedRegNumber) ?? mine[0];
+        setBusiness(match);
+        setStoredBusinessRegNumber(match.businessRegistrationNumber);
+      } catch {
+        // 세션 생성 실패 시에는 사업장 조회/등록 화면으로 진행한다.
+      } finally {
+        setBusinessCheckDone(true);
+      }
+    })();
+  }, [adminBusinessId]);
 
   useEffect(() => {
     if (!business) return;
-    listEmployees(business.id)
+    const load = adminBusinessId ? adminBusinessApi.listEmployees : listEmployees;
+    load(business.id)
       .then(setEmployees)
       .catch(() => setEmployees([]));
-  }, [business]);
+  }, [business, adminBusinessId]);
 
   const handleSwitchBusiness = () => {
     setStoredBusinessRegNumber(null);
@@ -119,6 +154,14 @@ export default function FormsPage() {
     return (
       <AppShell>
         <PageHeading title="노무서식" description="사업장 정보를 확인하는 중입니다..." />
+      </AppShell>
+    );
+  }
+
+  if (!business && adminBusinessId) {
+    return (
+      <AppShell>
+        <PageHeading title="노무서식" description="해당 사업장을 찾을 수 없습니다." />
       </AppShell>
     );
   }
@@ -142,22 +185,33 @@ export default function FormsPage() {
         description="사업장에서 자주 쓰는 노무 서식을 사업자정보가 자동으로 채워진 상태로 바로 작성·출력할 수 있습니다."
       />
 
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
-        <span>
-          현재 사업장:{" "}
-          <span className="font-semibold text-slate-900">
-            {business.businessName || "(상호 미입력)"}
-          </span>{" "}
-          ({business.businessRegistrationNumber})
-        </span>
-        <button
-          type="button"
-          onClick={handleSwitchBusiness}
-          className="text-blue-600 hover:underline"
-        >
-          다른 사업장으로 전환
-        </button>
-      </div>
+      {adminBusinessId ? (
+        <div className="mx-auto max-w-6xl px-4 pt-4 text-sm sm:px-6 print:hidden">
+          <div className="rounded-md bg-emerald-50 px-4 py-3 text-emerald-800">
+            관리자 열람 모드:{" "}
+            <span className="font-semibold">{business.businessName || "(상호 미입력)"}</span> (
+            {business.businessRegistrationNumber}) — 승인 여부와 무관하게 자유롭게 수정·출력할 수
+            있습니다.
+          </div>
+        </div>
+      ) : (
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
+          <span>
+            현재 사업장:{" "}
+            <span className="font-semibold text-slate-900">
+              {business.businessName || "(상호 미입력)"}
+            </span>{" "}
+            ({business.businessRegistrationNumber})
+          </span>
+          <button
+            type="button"
+            onClick={handleSwitchBusiness}
+            className="text-blue-600 hover:underline"
+          >
+            다른 사업장으로 전환
+          </button>
+        </div>
+      )}
 
       <main className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 print:block print:max-w-none print:gap-0 print:p-0 lg:grid-cols-2">
         <div className="space-y-6 print:hidden">

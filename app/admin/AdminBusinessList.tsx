@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { BusinessRecord } from "@/lib/businesses/types";
-import { setStoredBusinessRegNumber } from "@/lib/businesses/currentBusiness";
 import { approveBusinessAction, deleteBusinessAction, logoutAdmin } from "./actions";
 
 export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[] }) {
@@ -23,9 +22,8 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
     });
   };
 
-  const handleOpen = (regNumber: string) => {
-    setStoredBusinessRegNumber(regNumber);
-    window.open("/apply", "_blank");
+  const handleOpen = (id: string) => {
+    window.open(`/apply?adminBusinessId=${id}`, "_blank");
   };
 
   const handleToggleApprove = (id: string, approved: boolean) => {
@@ -69,8 +67,15 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
                   <td className="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">
                     {b.businessName || "(상호 미입력)"}
                   </td>
-                  <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
-                    {b.businessRegistrationNumber}
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => handleOpen(b.id)}
+                      className="text-slate-600 underline decoration-dotted hover:text-blue-600"
+                      title="이 사업장 정보 전체 보기"
+                    >
+                      {b.businessRegistrationNumber}
+                    </button>
                   </td>
                   <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
                     {b.representativeName || "-"}
@@ -87,13 +92,6 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
                     )}
                   </td>
                   <td className="space-x-3 px-4 py-3 text-right whitespace-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => handleOpen(b.businessRegistrationNumber)}
-                      className="text-emerald-600 hover:underline"
-                    >
-                      열기
-                    </button>
                     <button
                       type="button"
                       onClick={() => handleToggleApprove(b.id, !b.approved)}

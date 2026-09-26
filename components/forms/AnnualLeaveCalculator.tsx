@@ -21,6 +21,7 @@ export function AnnualLeaveCalculator({
   employmentPattern,
   breakTimes,
   fiveOrMoreEmployees,
+  listEmployeesApi = listEmployees,
 }: {
   /** 사업장이 아직 등록되지 않은 예시/초안 상태라면 null — 이때는 직원 선택 없이 현재 입력값을 그대로 사용한다. */
   businessId: string | null;
@@ -29,6 +30,8 @@ export function AnnualLeaveCalculator({
   employmentPattern: EmploymentPatternData;
   breakTimes: BreakTimeEntry[];
   fiveOrMoreEmployees: boolean;
+  /** 관리자가 다른 사업장을 열람 중일 때 service role 경로로 바꿔치기하기 위한 주입점. */
+  listEmployeesApi?: (businessId: string) => Promise<EmployeeRecord[]>;
 }) {
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
@@ -44,10 +47,10 @@ export function AnnualLeaveCalculator({
       setSelectedEmployeeId("");
       return;
     }
-    listEmployees(businessId)
+    listEmployeesApi(businessId)
       .then(setEmployees)
       .catch(() => setEmployees([]));
-  }, [businessId]);
+  }, [businessId, listEmployeesApi]);
 
   const selectedEmployee = employees.find((e) => e.id === selectedEmployeeId) ?? null;
 

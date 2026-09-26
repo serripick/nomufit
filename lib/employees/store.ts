@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase/client";
 import { Gender } from "@/lib/contract-templates/types";
 import { EmployeeRecord, EmployeeRecordInput } from "./types";
 
-interface EmployeeRow {
+export interface EmployeeRow {
   id: string;
   created_at: string;
   updated_at: string;
@@ -22,7 +22,7 @@ interface EmployeeRow {
   note: string | null;
 }
 
-function fromRow(row: EmployeeRow): EmployeeRecord {
+export function fromRow(row: EmployeeRow): EmployeeRecord {
   return {
     id: row.id,
     createdAt: row.created_at,
@@ -44,7 +44,7 @@ function fromRow(row: EmployeeRow): EmployeeRecord {
   };
 }
 
-function toRow(input: EmployeeRecordInput) {
+export function toRow(input: EmployeeRecordInput) {
   return {
     worker_name: input.workerName,
     worker_gender: input.workerGender,

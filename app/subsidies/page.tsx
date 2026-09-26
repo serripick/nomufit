@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { BusinessGate } from "@/components/forms/BusinessGate";
 import { BusinessRecord } from "@/lib/businesses/types";
-import { findBusinessByRegistrationNumber } from "@/lib/businesses/store";
+import { listMyBusinesses } from "@/lib/businesses/store";
+import { ensureSession } from "@/lib/supabase/session";
 import {
   getStoredBusinessRegNumber,
   setStoredBusinessRegNumber,
@@ -27,17 +28,25 @@ export default function SubsidiesPage() {
   const [contractEndDate, setContractEndDate] = useState("");
 
   useEffect(() => {
-    const savedRegNumber = getStoredBusinessRegNumber();
-    if (!savedRegNumber) {
-      setBusinessCheckDone(true);
-      return;
-    }
-    findBusinessByRegistrationNumber(savedRegNumber)
-      .then((found) => {
-        if (found) setBusiness(found);
-        else setStoredBusinessRegNumber(null);
-      })
-      .finally(() => setBusinessCheckDone(true));
+    (async () => {
+      try {
+        await ensureSession();
+        const mine = await listMyBusinesses();
+        if (mine.length === 0) {
+          setStoredBusinessRegNumber(null);
+          return;
+        }
+        const savedRegNumber = getStoredBusinessRegNumber();
+        const match =
+          mine.find((b) => b.businessRegistrationNumber === savedRegNumber) ?? mine[0];
+        setBusiness(match);
+        setStoredBusinessRegNumber(match.businessRegistrationNumber);
+      } catch {
+        // 세션 생성 실패 시에는 사업장 조회/등록 화면으로 진행한다.
+      } finally {
+        setBusinessCheckDone(true);
+      }
+    })();
   }, []);
 
   useEffect(() => {

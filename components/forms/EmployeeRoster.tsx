@@ -3,6 +3,17 @@ import { ContractFormData } from "@/lib/contract-templates/types";
 import { EmployeeRecord, EmployeeRecordInput } from "@/lib/employees/types";
 import { deleteEmployee, insertEmployee, listEmployees, updateEmployee } from "@/lib/employees/store";
 
+export interface EmployeeApi {
+  listEmployees: (businessId: string) => Promise<EmployeeRecord[]>;
+  insertEmployee: (businessId: string, input: EmployeeRecordInput) => Promise<EmployeeRecord>;
+  updateEmployee: (id: string, input: EmployeeRecordInput) => Promise<EmployeeRecord>;
+  deleteEmployee: (id: string) => Promise<void>;
+}
+
+/** 일반 고객 흐름의 기본값(RLS가 적용되는 anon-key 클라이언트). 관리자가 다른 사업장을
+ * "열기"로 보는 중이라면, 페이지에서 lib/admin/adminBusinessApi.ts를 대신 넘겨준다. */
+const defaultEmployeeApi: EmployeeApi = { listEmployees, insertEmployee, updateEmployee, deleteEmployee };
+
 function toInput(data: ContractFormData): EmployeeRecordInput {
   const { businessInfo, employmentPattern, breakTimes, wage } = data;
   return {
@@ -30,6 +41,7 @@ export function EmployeeRoster({
   onLoadEmployee,
   onSavedEmployee,
   onStartNew,
+  api = defaultEmployeeApi,
 }: {
   businessId: string;
   formData: ContractFormData;
@@ -37,6 +49,8 @@ export function EmployeeRoster({
   onLoadEmployee: (record: EmployeeRecord) => void;
   onSavedEmployee: (id: string) => void;
   onStartNew: () => void;
+  /** 관리자가 다른 사업장을 열람 중일 때 service role 경로로 바꿔치기하기 위한 주입점. */
+  api?: EmployeeApi;
 }) {
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "saving" | "error">("loading");
@@ -45,14 +59,14 @@ export function EmployeeRoster({
   const refresh = useCallback(async () => {
     setStatus("loading");
     try {
-      const rows = await listEmployees(businessId);
+      const rows = await api.listEmployees(businessId);
       setEmployees(rows);
       setStatus("idle");
     } catch (e) {
       setErrorMessage(e instanceof Error ? e.message : "직원 목록을 불러오지 못했습니다.");
       setStatus("error");
     }
-  }, [businessId]);
+  }, [businessId, api]);
 
   useEffect(() => {
     refresh();
@@ -63,10 +77,10 @@ export function EmployeeRoster({
     try {
       const input = toInput(formData);
       if (loadedEmployeeId) {
-        const updated = await updateEmployee(loadedEmployeeId, input);
+        const updated = await api.updateEmployee(loadedEmployeeId, input);
         onSavedEmployee(updated.id);
       } else {
-        const created = await insertEmployee(businessId, input);
+        const created = await api.insertEmployee(businessId, input);
         onSavedEmployee(created.id);
       }
       await refresh();
@@ -80,7 +94,7 @@ export function EmployeeRoster({
   const handleDelete = async (id: string) => {
     if (!confirm("이 직원 기록을 삭제할까요?")) return;
     try {
-      await deleteEmployee(id);
+      await api.deleteEmployee(id);
       if (id === loadedEmployeeId) onStartNew();
       await refresh();
     } catch (e) {

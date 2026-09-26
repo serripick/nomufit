@@ -1,16 +1,13 @@
-import { cookies } from "next/headers";
-import { listBusinesses } from "@/lib/businesses/store";
-import { listInquiries } from "@/lib/inquiries/store";
+import { isAdminRequest } from "@/lib/admin/isAdminRequest";
+import { listAllBusinesses } from "@/lib/businesses/adminStore";
+import { listInquiriesAsAdmin } from "@/lib/inquiries/adminStore";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { AdminLoginForm } from "./AdminLoginForm";
 import { AdminBusinessList } from "./AdminBusinessList";
 import { AdminInquiryList } from "./AdminInquiryList";
 
-const ADMIN_COOKIE = "nomufit_admin";
-
 export default async function AdminPage() {
-  const cookieStore = await cookies();
-  const isAuthed = cookieStore.get(ADMIN_COOKIE)?.value === "1";
+  const isAuthed = await isAdminRequest();
 
   if (!isAuthed) {
     return (
@@ -26,7 +23,7 @@ export default async function AdminPage() {
     );
   }
 
-  const [businesses, inquiries] = await Promise.all([listBusinesses(), listInquiries()]);
+  const [businesses, inquiries] = await Promise.all([listAllBusinesses(), listInquiriesAsAdmin()]);
 
   return (
     <AppShell>

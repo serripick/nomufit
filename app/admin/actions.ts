@@ -3,8 +3,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { approveBusiness, deleteBusiness } from "@/lib/businesses/store";
-import { updateInquiryStatus } from "@/lib/inquiries/store";
+import { isAdminRequest } from "@/lib/admin/isAdminRequest";
+import { approveBusinessAsAdmin, deleteBusinessAsAdmin } from "@/lib/businesses/adminStore";
+import { updateInquiryStatusAsAdmin } from "@/lib/inquiries/adminStore";
 import { InquiryRecord } from "@/lib/inquiries/types";
 
 const ADMIN_COOKIE = "nomufit_admin";
@@ -42,13 +43,23 @@ export async function logoutAdmin(): Promise<void> {
   redirect("/admin");
 }
 
+/** 아래 세 액션은 service role(RLS 완전 우회)을 쓰므로, 반드시 이 검사를 통과해야만 실행된다 —
+ * 이전에는 admin/page.tsx가 버튼을 안 보여주는 것에만 기대고 있어 직접 호출 시 뚫리는 구멍이었다. */
+async function assertAdmin(): Promise<void> {
+  if (!(await isAdminRequest())) {
+    throw new Error("관리자만 사용할 수 있습니다.");
+  }
+}
+
 export async function deleteBusinessAction(id: string): Promise<void> {
-  await deleteBusiness(id);
+  await assertAdmin();
+  await deleteBusinessAsAdmin(id);
   revalidatePath("/admin");
 }
 
 export async function approveBusinessAction(id: string, approved: boolean): Promise<void> {
-  await approveBusiness(id, approved);
+  await assertAdmin();
+  await approveBusinessAsAdmin(id, approved);
   revalidatePath("/admin");
 }
 
@@ -56,6 +67,7 @@ export async function updateInquiryStatusAction(
   id: string,
   status: InquiryRecord["status"]
 ): Promise<void> {
-  await updateInquiryStatus(id, status);
+  await assertAdmin();
+  await updateInquiryStatusAsAdmin(id, status);
   revalidatePath("/admin");
 }
