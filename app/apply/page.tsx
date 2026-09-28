@@ -453,7 +453,20 @@ function ApplyPageContent() {
           (activeTab === "contract" ? "" : "hidden")
         }
       >
-        <div className="space-y-6 print:hidden">
+        <div
+          className="space-y-6 print:hidden"
+          onFocus={(e) => {
+            // 예시 데이터를 보고 있을 때만: 필드를 클릭하면 기존 값이 전체 선택되어,
+            // 타이핑 한 번으로 바로 실제 정보로 덮어쓸 수 있게 한다(드래그로 지울 필요 없음).
+            // 실제 사업장 데이터가 있을 때는 평소처럼 커서만 놓이게 두어 값이 실수로
+            // 사라지지 않게 한다.
+            if (!isExample) return;
+            const target = e.target;
+            if (target instanceof HTMLInputElement && target.type !== "checkbox" && target.type !== "radio") {
+              target.select();
+            }
+          }}
+        >
           {business ? (
             <SectionCard title="직원 현황표">
               <EmployeeRoster
