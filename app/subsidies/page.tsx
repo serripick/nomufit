@@ -130,7 +130,7 @@ function SubsidiesPageContent() {
     <AppShell>
       <PageHeading
         title="고용지원금 검토"
-        description="직원 현황표에서 근로자를 선택하면 나이·계약형태를 기준으로 대표적인 고용지원금 4종의 해당 가능성을 결과지로 뽑아드립니다."
+        description="직원 현황표에서 근로자를 선택하면 나이·계약형태를 기준으로 대표적인 고용지원금 6종의 해당 가능성을 결과지로 뽑아드립니다."
       />
 
       {adminBusinessId ? (

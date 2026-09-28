@@ -22,6 +22,8 @@ export function EmploymentSubsidyReview({
 }) {
   const [isVulnerableGroup, setIsVulnerableGroup] = useState(false);
   const [isPreferentialRegion, setIsPreferentialRegion] = useState(false);
+  const [usesFlexibleWork, setUsesFlexibleWork] = useState(false);
+  const [hasReducedWorkingHours, setHasReducedWorkingHours] = useState(false);
 
   const results = reviewEmploymentSubsidies({
     birthDate: workerBirthDate,
@@ -29,15 +31,18 @@ export function EmploymentSubsidyReview({
     isFixedTerm: !!contractEndDate,
     isVulnerableGroup,
     isPreferentialRegion,
+    usesFlexibleWork,
+    hasReducedWorkingHours,
   });
   const matched = results.filter((r) => r.verdict === "가능성 있음");
 
   return (
     <div className="space-y-4">
       <p className="text-xs text-slate-500">
-        현재 입력된 근로자의 생년월일·채용일·계약형태를 기준으로, 대표적인 고용지원금 4종
-        (청년일자리도약장려금, 정규직 전환 지원금, 고용촉진장려금, 시니어인턴십) 중 해당 가능성이
-        있는 항목만 결과지로 뽑아드립니다.
+        현재 입력된 근로자의 생년월일·채용일·계약형태를 기준으로, 대표적인 고용지원금 6종
+        (청년일자리도약장려금, 정규직 전환 지원금, 고용촉진장려금, 시니어인턴십, 유연근무제,
+        워라밸일자리 장려금) 중 해당 가능성이 있는 항목만 결과지로 뽑아드립니다. 채용일로부터
+        3개월이 지난 신규채용 지원금은 신청 기한이 지난 것으로 보아 제외됩니다.
       </p>
 
       <div className="flex flex-wrap gap-4">
@@ -56,6 +61,22 @@ export function EmploymentSubsidyReview({
             onChange={(e) => setIsPreferentialRegion(e.target.checked)}
           />
           수도권 외 우대지역 사업장
+        </label>
+        <label className="flex items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            checked={usesFlexibleWork}
+            onChange={(e) => setUsesFlexibleWork(e.target.checked)}
+          />
+          현재 유연근무제 활용 중
+        </label>
+        <label className="flex items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            checked={hasReducedWorkingHours}
+            onChange={(e) => setHasReducedWorkingHours(e.target.checked)}
+          />
+          소정근로시간 단축 중
         </label>
       </div>
 
