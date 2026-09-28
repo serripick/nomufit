@@ -21,3 +21,8 @@ export async function updateInquiryStatusAsAdmin(
   const { error } = await supabaseAdmin.from("inquiries").update({ status }).eq("id", id);
   if (error) throw error;
 }
+
+export async function deleteInquiryAsAdmin(id: string): Promise<void> {
+  const { error } = await supabaseAdmin.from("inquiries").delete().eq("id", id);
+  if (error) throw error;
+}

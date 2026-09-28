@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdminRequest } from "@/lib/admin/isAdminRequest";
 import { approveBusinessAsAdmin, deleteBusinessAsAdmin } from "@/lib/businesses/adminStore";
-import { updateInquiryStatusAsAdmin } from "@/lib/inquiries/adminStore";
+import { deleteInquiryAsAdmin, updateInquiryStatusAsAdmin } from "@/lib/inquiries/adminStore";
 import { InquiryRecord } from "@/lib/inquiries/types";
 
 const ADMIN_COOKIE = "nomufit_admin";
@@ -69,5 +69,11 @@ export async function updateInquiryStatusAction(
 ): Promise<void> {
   await assertAdmin();
   await updateInquiryStatusAsAdmin(id, status);
+  revalidatePath("/admin");
+}
+
+export async function deleteInquiryAction(id: string): Promise<void> {
+  await assertAdmin();
+  await deleteInquiryAsAdmin(id);
   revalidatePath("/admin");
 }
