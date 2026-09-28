@@ -16,7 +16,6 @@ import { estimateMonthlyIncomeTax } from "@/lib/contract-templates/incomeTaxEsti
 import { formatCurrency } from "@/lib/contract-templates/format";
 import { FieldLabel, NumberInput, SectionCard } from "@/components/forms/fields";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
-import { BusinessGate } from "@/components/forms/BusinessGate";
 import { BusinessRecord } from "@/lib/businesses/types";
 import { listMyBusinesses } from "@/lib/businesses/store";
 import { ensureSession } from "@/lib/supabase/session";
@@ -27,7 +26,9 @@ import {
 import { PayslipPreview } from "@/components/preview/PayslipPreview";
 import { PrintGate } from "@/components/preview/PrintGate";
 import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
-import { InquiryForm } from "@/components/forms/InquiryForm";
+import { InquiryNote } from "@/components/forms/InquiryNote";
+import { DisclaimerNote } from "@/components/legal/DisclaimerNote";
+import { fetchAndDownloadPdf } from "@/lib/pdf/downloadPdf";
 import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 
 const now = new Date();
@@ -124,13 +125,6 @@ function PayslipPageContent() {
       });
   }, [business, adminBusinessId]);
 
-  const handleSwitchBusiness = () => {
-    setStoredBusinessRegNumber(null);
-    setBusiness(null);
-    setEmployees([]);
-    setSelectedId("");
-  };
-
   const employee = employees.find((e) => e.id === selectedId) ?? null;
   const breakdown = employee
     ? computeWageBreakdown(
@@ -200,11 +194,17 @@ function PayslipPageContent() {
   if (!business) {
     return (
       <AppShell>
-        <PageHeading
-          title="임금명세서 생성"
-          description="먼저 사업자등록번호로 사업장을 조회하거나 새로 등록해주세요. 근로계약서 페이지와 같은 사업장 데이터를 공유합니다."
-        />
-        <BusinessGate onBusinessLoaded={setBusiness} />
+        <PageHeading title="임금명세서 생성" description="사업장이 아직 등록되지 않았습니다." />
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+          <p className="rounded-md border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+            임금명세서는 근로계약서 페이지에서 등록한 사업장·직원 정보를 그대로 불러와 사용합니다.
+            먼저{" "}
+            <a href="/apply" className="font-semibold text-blue-600 underline">
+              지금 시작하기(근로계약서 작성)
+            </a>
+            에서 사업장 정보를 입력해주세요.
+          </p>
+        </div>
       </AppShell>
     );
   }
@@ -226,7 +226,7 @@ function PayslipPageContent() {
           </div>
         </div>
       ) : (
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
+        <div className="mx-auto max-w-6xl px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
           <span>
             현재 사업장:{" "}
             <span className="font-semibold text-slate-900">
@@ -234,13 +234,6 @@ function PayslipPageContent() {
             </span>{" "}
             ({business.businessRegistrationNumber})
           </span>
-          <button
-            type="button"
-            onClick={handleSwitchBusiness}
-            className="text-blue-600 hover:underline"
-          >
-            다른 사업장으로 전환
-          </button>
         </div>
       )}
 
@@ -431,11 +424,20 @@ function PayslipPageContent() {
                   payDay={payDay}
                 />
               </PrintGate>
+              <DisclaimerNote className="mt-4 print:hidden" />
               <div className="mt-4 print:hidden">
                 {isAdmin || business.approved ? (
-                  <PrintDownloadButton />
+                  <PrintDownloadButton
+                    onDownloadPdf={() =>
+                      fetchAndDownloadPdf(
+                        "/api/pdf/payslip",
+                        { employee, breakdown, deductions, payYear, payMonth, payDay },
+                        "임금명세서.pdf"
+                      )
+                    }
+                  />
                 ) : (
-                  <InquiryForm
+                  <InquiryNote
                     businessRegistrationNumber={business.businessRegistrationNumber}
                     businessName={business.businessName}
                   />

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { nanumSquareRound } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className="h-full antialiased">
+    <html lang="ko" className={`h-full antialiased ${nanumSquareRound.variable}`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

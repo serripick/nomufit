@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
-import { BusinessGate } from "@/components/forms/BusinessGate";
 import { BusinessRecord } from "@/lib/businesses/types";
 import { listMyBusinesses } from "@/lib/businesses/store";
 import { ensureSession } from "@/lib/supabase/session";
@@ -72,12 +71,6 @@ export default function SubsidiesPage() {
     }
   };
 
-  const handleSwitchBusiness = () => {
-    setStoredBusinessRegNumber(null);
-    setBusiness(null);
-    setEmployees([]);
-  };
-
   if (!businessCheckDone) {
     return (
       <AppShell>
@@ -89,11 +82,17 @@ export default function SubsidiesPage() {
   if (!business) {
     return (
       <AppShell>
-        <PageHeading
-          title="고용지원금 검토"
-          description="먼저 사업자등록번호로 사업장을 조회하거나 새로 등록해주세요. 근로계약서 페이지와 같은 사업장 데이터를 공유합니다."
-        />
-        <BusinessGate onBusinessLoaded={setBusiness} />
+        <PageHeading title="고용지원금 검토" description="사업장이 아직 등록되지 않았습니다." />
+        <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+          <p className="rounded-md border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+            고용지원금 검토는 근로계약서 페이지에서 등록한 사업장·직원 정보를 그대로 불러와
+            사용합니다. 먼저{" "}
+            <a href="/apply" className="font-semibold text-blue-600 underline">
+              지금 시작하기(근로계약서 작성)
+            </a>
+            에서 사업장 정보를 입력해주세요.
+          </p>
+        </div>
       </AppShell>
     );
   }
@@ -105,7 +104,7 @@ export default function SubsidiesPage() {
         description="직원 현황표에서 근로자를 선택하면 나이·계약형태를 기준으로 대표적인 고용지원금 4종의 해당 가능성을 결과지로 뽑아드립니다."
       />
 
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6">
+      <div className="mx-auto max-w-3xl px-4 pt-4 text-sm text-slate-600 sm:px-6">
         <span>
           현재 사업장:{" "}
           <span className="font-semibold text-slate-900">
@@ -113,13 +112,6 @@ export default function SubsidiesPage() {
           </span>{" "}
           ({business.businessRegistrationNumber})
         </span>
-        <button
-          type="button"
-          onClick={handleSwitchBusiness}
-          className="text-blue-600 hover:underline"
-        >
-          다른 사업장으로 전환
-        </button>
       </div>
 
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">

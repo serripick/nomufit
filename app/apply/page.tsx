@@ -42,7 +42,9 @@ import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { ContractPreview } from "@/components/preview/ContractPreview";
 import { PrintGate } from "@/components/preview/PrintGate";
 import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
-import { InquiryForm } from "@/components/forms/InquiryForm";
+import { InquiryNote } from "@/components/forms/InquiryNote";
+import { DisclaimerNote } from "@/components/legal/DisclaimerNote";
+import { fetchAndDownloadPdf } from "@/lib/pdf/downloadPdf";
 import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 
 const REGISTRATION_NUMBER_PATTERN = /^\d{3}-\d{2}-\d{5}$/;
@@ -550,12 +552,17 @@ function ApplyPageContent() {
           <PrintGate approved={isAdmin || (business?.approved ?? false)}>
             <ContractPreview data={formData} />
           </PrintGate>
+          <DisclaimerNote className="mt-4 print:hidden" />
           {business && (
             <div className="mt-4 print:hidden">
               {isAdmin || business.approved ? (
-                <PrintDownloadButton />
+                <PrintDownloadButton
+                  onDownloadPdf={() =>
+                    fetchAndDownloadPdf("/api/pdf/contract", formData, "근로계약서.pdf")
+                  }
+                />
               ) : (
-                <InquiryForm
+                <InquiryNote
                   businessRegistrationNumber={business.businessRegistrationNumber}
                   businessName={business.businessName}
                 />

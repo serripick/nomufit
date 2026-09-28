@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { FieldLabel, TextInput } from "@/components/forms/fields";
-import { formatCurrency } from "@/lib/contract-templates/format";
 import { EmployeeRecord } from "@/lib/employees/types";
-import { computeWageBreakdown } from "@/lib/contract-templates/wage-calc";
 import { DocField, DocShell, DocTable, DocTitle } from "./DocGrid";
 
 export interface DismissalNoticeData {
@@ -18,13 +16,6 @@ export interface DismissalNoticeData {
   dismissalDate: string;
 }
 
-function daysBetween(a: string, b: string): number | null {
-  const d1 = new Date(a);
-  const d2 = new Date(b);
-  if (!a || !b || Number.isNaN(d1.getTime()) || Number.isNaN(d2.getTime())) return null;
-  return Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
-}
-
 export function DismissalNoticeForm({
   businessName,
   representativeName,
@@ -36,7 +27,7 @@ export function DismissalNoticeForm({
   representativeName: string;
   businessAddress: string;
   employees: EmployeeRecord[];
-  onDataChange: (data: DismissalNoticeData, noticePeriodDays: number | null, estimatedAllowance: number) => void;
+  onDataChange: (data: DismissalNoticeData) => void;
 }) {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const [workerName, setWorkerName] = useState("");
@@ -47,10 +38,8 @@ export function DismissalNoticeForm({
   const [noticeDate, setNoticeDate] = useState("");
   const [dismissalDate, setDismissalDate] = useState("");
 
-  const selectedEmployee = employees.find((e) => e.id === selectedEmployeeId) ?? null;
-
   const emit = (patch: Partial<DismissalNoticeData>) => {
-    const data: DismissalNoticeData = {
+    onDataChange({
       businessName,
       representativeName,
       businessAddress,
@@ -62,19 +51,7 @@ export function DismissalNoticeForm({
       noticeDate,
       dismissalDate,
       ...patch,
-    };
-    const noticePeriodDays = daysBetween(data.noticeDate, data.dismissalDate);
-    let estimatedAllowance = 0;
-    if (selectedEmployee && noticePeriodDays !== null && noticePeriodDays < 30) {
-      const breakdown = computeWageBreakdown(
-        selectedEmployee.employmentPattern,
-        selectedEmployee.breakTimes,
-        selectedEmployee.wage,
-        selectedEmployee.fiveOrMoreEmployees
-      );
-      estimatedAllowance = Math.round(breakdown.baseSalary);
-    }
-    onDataChange(data, noticePeriodDays, estimatedAllowance);
+    });
   };
 
   const loadEmployee = (id: string) => {
@@ -194,17 +171,7 @@ export function DismissalNoticeForm({
   );
 }
 
-export function DismissalNoticePreview({
-  data,
-  noticePeriodDays,
-  estimatedAllowance,
-}: {
-  data: DismissalNoticeData;
-  noticePeriodDays: number | null;
-  estimatedAllowance: number;
-}) {
-  const showAllowanceWarning = noticePeriodDays !== null && noticePeriodDays < 30;
-
+export function DismissalNoticePreview({ data }: { data: DismissalNoticeData }) {
   return (
     <DocShell>
       <DocTitle>해고[예고] 서면 통보서</DocTitle>
@@ -259,26 +226,6 @@ export function DismissalNoticePreview({
       <p className="mt-6 text-center text-sm print:mt-4 print:text-xs">
         {data.noticeDate || "20     년      월      일"}
       </p>
-
-      {showAllowanceWarning && (
-        <div className="mt-6 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-xs text-red-700 print:mt-3">
-          <p className="font-semibold">
-            30일 미만 예고 — 해고예고수당 지급 의무가 발생합니다 (예고기간 {noticePeriodDays}일)
-          </p>
-          <p className="mt-1">
-            근로기준법 제26조에 따라 30일 전에 예고하지 않은 해고는 30일분의 통상임금을
-            해고예고수당으로 지급해야 합니다.
-            {estimatedAllowance > 0 && (
-              <>
-                {" "}
-                선택하신 직원의 기본급 기준 예상 해고예고수당은{" "}
-                <span className="font-semibold">{formatCurrency(estimatedAllowance)}</span>{" "}
-                입니다(참고용, 정확한 통상임금 산정은 별도 확인 필요).
-              </>
-            )}
-          </p>
-        </div>
-      )}
 
       <div className="mt-10 border-t border-dashed border-slate-400 pt-6 print:mt-6 print:pt-4">
         <p className="text-center text-xs text-slate-400">- 절취선 -</p>

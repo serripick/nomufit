@@ -470,11 +470,6 @@ export function ContractPreview({ data }: { data: ContractFormData }) {
         </div>
       </div>
 
-      <p className="doc-disclaimer mx-8 mb-8 print:mx-4 print:mb-3">
-        본 문서는 근로기준법 등 관계 법령을 기준으로 자동 생성되었습니다. 다만 사업장별 특수한
-        사정이 있을 수 있으므로, 실제 적용 전 노무사 등 전문가의 검토를 받으시기를 권장합니다.
-        최종 검토 및 사용에 대한 책임은 이용자 본인에게 있습니다.
-      </p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { LogoMark } from "@/components/layout/AppShell";
 import { loginAdmin, LoginState } from "./actions";
 
 const initialState: LoginState = {};
@@ -11,8 +12,11 @@ export function AdminLoginForm() {
   return (
     <form
       action={formAction}
-      className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+      className="space-y-4 rounded-2xl border border-[#dcecff] bg-gradient-to-br from-[#f0f8ff] to-[#edf7ff] p-7 shadow-sm"
     >
+      <div className="mb-1 flex justify-center">
+        <LogoMark size={40} />
+      </div>
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700">
           관리자 비밀번호
@@ -26,11 +30,7 @@ export function AdminLoginForm() {
         />
       </div>
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className="primary-link w-full disabled:opacity-50">
         {pending ? "확인 중..." : "입장"}
       </button>
     </form>

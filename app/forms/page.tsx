@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
-import { BusinessGate } from "@/components/forms/BusinessGate";
 import { BusinessRecord } from "@/lib/businesses/types";
 import { listMyBusinesses } from "@/lib/businesses/store";
 import { ensureSession } from "@/lib/supabase/session";
@@ -17,7 +16,9 @@ import { EmployeeRecord } from "@/lib/employees/types";
 import { SectionCard } from "@/components/forms/fields";
 import { PrintGate } from "@/components/preview/PrintGate";
 import { PrintDownloadButton } from "@/components/preview/PrintDownloadButton";
-import { InquiryForm } from "@/components/forms/InquiryForm";
+import { InquiryNote } from "@/components/forms/InquiryNote";
+import { DisclaimerNote } from "@/components/legal/DisclaimerNote";
+import { fetchAndDownloadPdf } from "@/lib/pdf/downloadPdf";
 import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 import {
   RepresentativeSelectionForm,
@@ -101,8 +102,6 @@ function FormsPageContent() {
   const [resignationData, setResignationData] = useState<ResignationLetterData | null>(null);
   const [leaveRequestData, setLeaveRequestData] = useState<LeaveRequestData | null>(null);
   const [dismissalData, setDismissalData] = useState<DismissalNoticeData | null>(null);
-  const [dismissalNoticePeriod, setDismissalNoticePeriod] = useState<number | null>(null);
-  const [dismissalAllowance, setDismissalAllowance] = useState(0);
   const [workerRegisterData, setWorkerRegisterData] = useState<WorkerRegisterData | null>(null);
   const [certData, setCertData] = useState<EmploymentCertificateData | null>(null);
   const [settlementData, setSettlementData] = useState<RetirementSettlementData | null>(null);
@@ -144,12 +143,6 @@ function FormsPageContent() {
       .catch(() => setEmployees([]));
   }, [business, adminBusinessId]);
 
-  const handleSwitchBusiness = () => {
-    setStoredBusinessRegNumber(null);
-    setBusiness(null);
-    setEmployees([]);
-  };
-
   if (!businessCheckDone) {
     return (
       <AppShell>
@@ -169,14 +162,171 @@ function FormsPageContent() {
   if (!business) {
     return (
       <AppShell>
-        <PageHeading
-          title="노무서식"
-          description="먼저 사업자등록번호로 사업장을 조회하거나 새로 등록해주세요. 근로계약서·임금명세서 페이지와 같은 사업장 데이터를 공유합니다."
-        />
-        <BusinessGate onBusinessLoaded={setBusiness} />
+        <PageHeading title="노무서식" description="사업장이 아직 등록되지 않았습니다." />
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+          <p className="rounded-md border border-dashed border-slate-300 p-4 text-sm text-slate-600">
+            노무서식은 근로계약서 페이지에서 등록한 사업장·직원 정보를 그대로 불러와 사용합니다.
+            먼저{" "}
+            <a href="/apply" className="font-semibold text-blue-600 underline">
+              지금 시작하기(근로계약서 작성)
+            </a>
+            에서 사업장 정보를 입력해주세요.
+          </p>
+        </div>
       </AppShell>
     );
   }
+
+  const buildPdfPayload = () => {
+    switch (docType) {
+      case "근로자명부":
+        return {
+          docType,
+          data:
+            workerRegisterData ?? {
+              businessName: business.businessName,
+              representativeName: business.representativeName,
+              workerName: "",
+              birthDate: "",
+              address: "",
+              phone: "",
+              dependents: 0,
+              jobDescription: "",
+              qualification: "",
+              education: "",
+              career: "",
+              militaryService: "",
+              hireDate: "",
+              contractRenewalDate: "매년 1월 1일",
+              dismissalDate: "",
+              resignationDate: "",
+              resignationReason: "",
+              clearance: "",
+              specialNotes: "",
+            },
+        };
+      case "재직증명서":
+        return {
+          docType,
+          data:
+            certData ?? {
+              business,
+              certNumber: "",
+              workerName: "",
+              birthDate: "",
+              address: "",
+              workLocation: "",
+              phone: "",
+              hireDate: "",
+              asOfDate: "",
+              purpose: "제출용",
+              copies: 1,
+              issueDate: "",
+            },
+        };
+      case "퇴직 정산 확인서":
+        return {
+          docType,
+          data:
+            settlementData ?? {
+              businessName: business.businessName,
+              representativeName: business.representativeName,
+              workerName: "",
+              workerBirthDate: "",
+              position: "",
+              settlementAmount: 0,
+              paymentDate: "",
+              paymentMethod: "계좌이체",
+              bankName: "",
+              accountNumber: "",
+              accountHolder: "",
+              hireDate: "",
+              resignationDate: "",
+              agreementDate: "",
+            },
+        };
+      case "근로자대표 선임서":
+        return {
+          docType,
+          data:
+            repSelectionData ?? {
+              businessName: business.businessName,
+              representativeName: business.representativeName,
+              repName: "",
+              repBirthDate: "",
+              termStart: "",
+              termEnd: "",
+              voters: [],
+            },
+        };
+      case "연차유급휴가 대체 합의서":
+        return {
+          docType,
+          data:
+            leaveSubData ?? {
+              businessName: business.businessName,
+              representativeName: business.representativeName,
+              repName: "",
+              effectiveStart: "",
+              effectiveEnd: "",
+              pairs: [],
+            },
+        };
+      case "사직서":
+        return {
+          docType,
+          data:
+            resignationData ?? {
+              businessName: business.businessName,
+              representativeName: business.representativeName,
+              workerName: "",
+              workLocation: "",
+              address: "",
+              phone: "",
+              hireDate: "",
+              resignationDate: "",
+              retirementType: "이직",
+              reason: "",
+              writtenDate: "",
+            },
+        };
+      case "휴가(연차) 신청서":
+        return {
+          docType,
+          data:
+            leaveRequestData ?? {
+              businessName: business.businessName,
+              representativeName: business.representativeName,
+              workerName: "",
+              contact: "",
+              applyDate: "",
+              leaveType: "연차휴가",
+              startDate: "",
+              endDate: "",
+              note: "",
+            },
+        };
+      case "해고예고통지서":
+        return {
+          docType,
+          data:
+            dismissalData ?? {
+              businessName: business.businessName,
+              representativeName: business.representativeName,
+              businessAddress: business.businessAddress,
+              workerName: "",
+              workerBirthDate: "",
+              hireDate: "",
+              position: "",
+              reason: "",
+              noticeDate: "",
+              dismissalDate: "",
+            },
+        };
+      default:
+        return { docType, data: {} };
+    }
+  };
 
   return (
     <AppShell>
@@ -195,7 +345,7 @@ function FormsPageContent() {
           </div>
         </div>
       ) : (
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
+        <div className="mx-auto max-w-6xl px-4 pt-4 text-sm text-slate-600 sm:px-6 print:hidden">
           <span>
             현재 사업장:{" "}
             <span className="font-semibold text-slate-900">
@@ -203,13 +353,6 @@ function FormsPageContent() {
             </span>{" "}
             ({business.businessRegistrationNumber})
           </span>
-          <button
-            type="button"
-            onClick={handleSwitchBusiness}
-            className="text-blue-600 hover:underline"
-          >
-            다른 사업장으로 전환
-          </button>
         </div>
       )}
 
@@ -298,11 +441,7 @@ function FormsPageContent() {
                 representativeName={business.representativeName}
                 businessAddress={business.businessAddress}
                 employees={employees}
-                onDataChange={(data, noticePeriodDays, estimatedAllowance) => {
-                  setDismissalData(data);
-                  setDismissalNoticePeriod(noticePeriodDays);
-                  setDismissalAllowance(estimatedAllowance);
-                }}
+                onDataChange={setDismissalData}
               />
             )}
           </SectionCard>
@@ -461,16 +600,19 @@ function FormsPageContent() {
                   dismissalDate: "",
                 }
               }
-              noticePeriodDays={dismissalNoticePeriod}
-              estimatedAllowance={dismissalAllowance}
             />
           )}
           </PrintGate>
+          <DisclaimerNote className="mt-4 print:hidden" />
           <div className="mt-4 print:hidden">
             {isAdmin || business.approved ? (
-              <PrintDownloadButton />
+              <PrintDownloadButton
+                onDownloadPdf={() =>
+                  fetchAndDownloadPdf("/api/pdf/forms", buildPdfPayload(), "노무서식.pdf")
+                }
+              />
             ) : (
-              <InquiryForm
+              <InquiryNote
                 businessRegistrationNumber={business.businessRegistrationNumber}
                 businessName={business.businessName}
               />

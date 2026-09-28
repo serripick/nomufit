@@ -11,8 +11,8 @@ const features = [
 ];
 
 const faqs = [
-  { tag: "시작", title: "처음 이용하는 사업장은 어떻게 시작하나요?", answer: "근로계약서 메뉴에서 사업자등록번호로 사업장을 조회하세요. 등록되지 않은 사업장이라면 새 사업장 등록을 진행할 수 있습니다." },
-  { tag: "연결", title: "사업장 정보를 매번 입력해야 하나요?", answer: "등록한 사업장 정보는 근로계약서, 임금대장, 고용지원금, 노무서식에서 함께 사용합니다. 다른 사업장을 관리할 때는 각 업무 화면에서 사업장을 전환하세요." },
+  { tag: "시작", title: "처음 이용하는 사업장은 어떻게 시작하나요?", answer: "홈 화면의 '지금 시작하기'를 눌러 근로계약서 작성 화면으로 들어간 뒤, 사업장 정보와 직원 정보를 입력하세요. 로그인 없이도 바로 저장되고, 임금대장·고용지원금·노무서식 등 다른 메뉴에서 자동으로 그 정보를 불러와 사용합니다." },
+  { tag: "연결", title: "사업장 정보를 매번 입력해야 하나요?", answer: "한 번 등록한 사업장 정보는 근로계약서, 임금대장, 고용지원금, 노무서식에서 자동으로 함께 사용됩니다. 정식 이용 승인을 받으면 이메일과 비밀번호를 설정해, 다른 기기에서도 로그인만으로 같은 사업장 정보를 이어서 쓸 수 있습니다." },
   { tag: "서식", title: "어떤 노무서식을 작성할 수 있나요?", answer: "근로자명부, 재직증명서, 퇴직 정산 확인서, 근로자대표 선임서, 연차유급휴가 대체 합의서, 사직서, 휴가 신청서, 해고예고통지서를 작성할 수 있습니다." },
 ];
 
@@ -52,7 +52,7 @@ export default function Dashboard() {
           <p className="hero-label">사업장의 노무, <strong>딱 맞게.</strong></p>
           <h1 id="welcome-title">복잡한 노무 업무,<br /><span>노무핏</span> 하나로 충분합니다.</h1>
           <p className="hero-description">근로계약서부터 임금대장, 고용지원금, 노무서식까지<br className="desktop-break" /> 한 번의 입력으로 간편하게 이어가세요.</p>
-          <div className="hero-actions"><Link href="/apply" className="primary-link">지금 시작하기 <span aria-hidden="true">→</span></Link><Link href="/forms" className="secondary-link">노무서식 보기</Link><Link href="/contact" className="secondary-link">이용문의</Link></div>
+          <div className="hero-actions"><Link href="/apply" className="primary-link">지금 시작하기 <span aria-hidden="true">→</span></Link><Link href="/contact" className="secondary-link">이용문의</Link></div>
           <ul className="hero-benefits"><li><span aria-hidden="true">✓</span>사업장 정보 연동</li><li><span aria-hidden="true">◷</span>반복 업무는 간결하게</li><li><span aria-hidden="true">▤</span>문서 미리보기·출력</li></ul>
         </div>
         <div className="hero-visual" aria-hidden="true">

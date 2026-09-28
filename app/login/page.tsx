@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { AppShell, PageHeading } from "@/components/layout/AppShell";
+import { AppShell, LogoMark, PageHeading } from "@/components/layout/AppShell";
 import { FieldLabel, TextInput } from "@/components/forms/fields";
 
 export default function LoginPage() {
@@ -33,7 +33,13 @@ export default function LoginPage() {
         description="정식 이용 승인 후 설정한 이메일과 비밀번호로 로그인하면, 다른 기기에서도 우리 사업장 정보를 이어서 관리할 수 있습니다."
       />
       <div className="mx-auto max-w-sm px-4 py-10 sm:px-6">
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 rounded-2xl border border-[#dcecff] bg-gradient-to-br from-[#f0f8ff] to-[#edf7ff] p-7 shadow-sm"
+        >
+          <div className="mb-1 flex justify-center">
+            <LogoMark size={40} />
+          </div>
           <div>
             <FieldLabel>이메일</FieldLabel>
             <TextInput
@@ -58,7 +64,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={status === "loading"}
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            className="primary-link w-full disabled:opacity-50"
           >
             {status === "loading" ? "로그인 중..." : "로그인"}
           </button>

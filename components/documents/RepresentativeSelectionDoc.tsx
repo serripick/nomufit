@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FieldLabel, TextInput } from "@/components/forms/fields";
+import { padVoterRows } from "@/lib/documents/representativeSelection";
 import { DocParagraph, DocShell, DocTitle } from "./DocGrid";
 
 interface Voter {
@@ -184,12 +185,12 @@ export function RepresentativeSelectionPreview({ data }: { data: RepresentativeS
           </tr>
         </thead>
         <tbody>
-          {data.voters.map((v, i) => (
-            <tr key={v.id}>
-              <td className="border border-slate-400 px-2 py-2">{i + 1}</td>
-              <td className="border border-slate-400 px-2 py-2">{v.name || "미입력"}</td>
-              <td className="border border-slate-400 px-2 py-2">{v.birthDate || "미입력"}</td>
-              <td className="border border-slate-400 px-2 py-2">(인)</td>
+          {padVoterRows(data.voters).map((v) => (
+            <tr key={v.index}>
+              <td className="border border-slate-400 px-2 py-2">{v.index}</td>
+              <td className="border border-slate-400 px-2 py-3">{v.name}</td>
+              <td className="border border-slate-400 px-2 py-3">{v.birthDate}</td>
+              <td className="border border-slate-400 px-2 py-3">{v.name ? "(인)" : ""}</td>
             </tr>
           ))}
         </tbody>

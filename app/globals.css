@@ -7,7 +7,7 @@
   --mint: #00c9af;
   --muted: #607798;
   --line: #e2ecf8;
-  --font-geist-sans: Arial, "Malgun Gothic", sans-serif;
+  --font-geist-sans: var(--font-nanum-square-round), Arial, "Malgun Gothic", sans-serif;
   --font-geist-mono: Consolas, monospace;
 }
 @theme inline {
@@ -48,6 +48,8 @@ button:disabled { cursor: not-allowed; }
 .search-results a:hover { background: #eff8ff; }
 .search-results strong { font-size: 13px; }.search-results a>span:first-of-type { grid-column: 1; font-size: 11px; color: #7185a0; line-height: 1.6; }.search-results a>span:last-child { grid-column: 2; grid-row: 1 / 3; color: #008cff; }
 .search-empty { padding: 12px 8px; font-size: 12px; color: #657c9a; line-height: 1.8; }
+.topbar-login { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; height: 38px; padding: 0 20px; border-radius: 999px; border: 1.5px solid #102D53; color: #102D53; font-size: 13px; font-weight: 700; white-space: nowrap; transition: background .18s ease, color .18s ease; }
+.topbar-login:hover { background: #102D53; color: #fff; }
 .workspace-profile { display: flex; align-items: center; gap: 11px; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .profile-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: white; background: linear-gradient(135deg,#83a3c4,#426487); box-shadow: 0 3px 6px #15385616; }
 .profile-avatar svg { width: 24px; height: 24px; }
@@ -64,12 +66,12 @@ button:disabled { cursor: not-allowed; }
 .sidebar-note h3 strong { color: #008cff; font-size: 25px; }
 .note-line { width: 30px; height: 3px; background: #00c9ad; margin-top: 15px; border-radius: 3px; }
 .sidebar-note { padding-bottom: 24px; }
-.sidebar-help { display: flex; justify-content: space-between; padding: 17px 8px 0; color: #6480a1; font-size: 11px; }
-.sidebar-help:hover { color: #0086ef; }
+.sidebar-help { display: flex; justify-content: space-between; margin-top: 10px; padding: 10px 12px; border-radius: 9px; color: #3B4C6B; font-size: 13px; font-weight: 700; background: #F1F6FC; transition: background .18s ease, color .18s ease; }
+.sidebar-help:hover { background: #E4FBF6; color: #04806F; }
 .app-body { margin-left: 224px; padding-top: 86px; }
-.app-main { min-width: 0; }
+.app-main { min-width: 0; animation: arrive .4s ease both; }
 .mobile-nav { display: none; }
-.dashboard { max-width: 1700px; margin: 0 auto; padding: 20px 24px 0; animation: arrive .4s ease both; }
+.dashboard { max-width: 1700px; margin: 0 auto; padding: 20px 24px 0; }
 .dashboard h1, .dashboard h2, .dashboard p { word-break: keep-all; overflow-wrap: break-word; }
 .welcome-panel { position: relative; display: flex; align-items: center; gap: 20px; min-height: 0; overflow: hidden; border-radius: 18px; background: #eaf6ff; border: 1px solid #e9f3ff; }
 .hero-visual { position: relative; flex-shrink: 0; display: grid; place-items: center; width: 320px; margin-right: 8px; }
@@ -119,6 +121,15 @@ button:disabled { cursor: not-allowed; }
 @keyframes arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes attention-ring { 0%, 100% { box-shadow: 0 0 0 0 #0086ed66; } 50% { box-shadow: 0 0 0 6px #0086ed00; } }
 .doc-type-attention { animation: attention-ring 1.4s ease-in-out infinite; border-color: #0086ed !important; }
+@keyframes price-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(2,191,168,0.45); } 70% { box-shadow: 0 0 0 8px rgba(2,191,168,0); } }
+.price-emphasis { animation: price-pulse 2.4s ease-out infinite; background: linear-gradient(135deg, #E4FBF6, #F1FCFA) !important; border: 1px solid #9FE6D9 !important; color: #04806F !important; font-weight: 700 !important; }
+
+@keyframes subsidy-pop { 0% { transform: scale(0.96); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.subsidy-match-card { animation: subsidy-pop .35s ease both; position: relative; overflow: hidden; border-radius: 14px; background: linear-gradient(135deg, #073B33, #04554A); color: #fff; padding: 16px 18px; }
+.subsidy-match-card + .subsidy-match-card { margin-top: 12px; }
+.subsidy-match-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #02BFA8; flex-shrink: 0; }
+.subsidy-match-total { font-size: 22px; font-weight: 800; color: #fff; }
+.subsidy-match-total-unit { font-size: 12px; font-weight: 500; color: #9FE6D9; margin-left: 2px; }
 /* Form styles apply only on screen. Calculation, input, and print content are unchanged. */
 @media screen {
   .app-main .section-card { border: 1px solid #dfe9f5; border-radius: 15px; box-shadow: 0 3px 14px #1e568605; }
