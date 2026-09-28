@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AppShell, PageHeading } from "@/components/layout/AppShell";
 import { BusinessRecord } from "@/lib/businesses/types";
 import { listMyBusinesses } from "@/lib/businesses/store";
@@ -10,11 +11,31 @@ import {
   setStoredBusinessRegNumber,
 } from "@/lib/businesses/currentBusiness";
 import { listEmployees } from "@/lib/employees/store";
+import * as adminBusinessApi from "@/lib/admin/adminBusinessApi";
 import { EmployeeRecord } from "@/lib/employees/types";
 import { FieldLabel, SectionCard, TextInput } from "@/components/forms/fields";
 import { EmploymentSubsidyReview } from "@/components/forms/EmploymentSubsidyReview";
+import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 
 export default function SubsidiesPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppShell>
+          <PageHeading title="고용지원금 검토" description="불러오는 중입니다..." />
+        </AppShell>
+      }
+    >
+      <SubsidiesPageContent />
+    </Suspense>
+  );
+}
+
+function SubsidiesPageContent() {
+  const isAdmin = useIsAdmin();
+  const searchParams = useSearchParams();
+  const adminBusinessId = isAdmin ? searchParams.get("adminBusinessId") : null;
+
   const [business, setBusiness] = useState<BusinessRecord | null>(null);
   const [businessCheckDone, setBusinessCheckDone] = useState(false);
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
@@ -27,6 +48,13 @@ export default function SubsidiesPage() {
   const [contractEndDate, setContractEndDate] = useState("");
 
   useEffect(() => {
+    if (adminBusinessId) {
+      adminBusinessApi
+        .getBusiness(adminBusinessId)
+        .then(setBusiness)
+        .finally(() => setBusinessCheckDone(true));
+      return;
+    }
     (async () => {
       try {
         await ensureSession();
@@ -46,18 +74,19 @@ export default function SubsidiesPage() {
         setBusinessCheckDone(true);
       }
     })();
-  }, []);
+  }, [adminBusinessId]);
 
   useEffect(() => {
     if (!business) return;
-    listEmployees(business.id)
+    const load = adminBusinessId ? adminBusinessApi.listEmployees : listEmployees;
+    load(business.id)
       .then((rows) => {
         setEmployees(rows);
         if (rows.length > 0) loadEmployee(rows[0].id, rows);
       })
       .catch(() => setEmployees([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [business]);
+  }, [business, adminBusinessId]);
 
   const loadEmployee = (id: string, list: EmployeeRecord[] = employees) => {
     setSelectedEmployeeId(id);
@@ -104,15 +133,26 @@ export default function SubsidiesPage() {
         description="직원 현황표에서 근로자를 선택하면 나이·계약형태를 기준으로 대표적인 고용지원금 4종의 해당 가능성을 결과지로 뽑아드립니다."
       />
 
-      <div className="mx-auto max-w-3xl px-4 pt-4 text-sm text-slate-600 sm:px-6">
-        <span>
-          현재 사업장:{" "}
-          <span className="font-semibold text-slate-900">
-            {business.businessName || "(상호 미입력)"}
-          </span>{" "}
-          ({business.businessRegistrationNumber})
-        </span>
-      </div>
+      {adminBusinessId ? (
+        <div className="mx-auto max-w-3xl px-4 pt-4 text-sm sm:px-6">
+          <div className="rounded-md bg-emerald-50 px-4 py-3 text-emerald-800">
+            관리자 열람 모드:{" "}
+            <span className="font-semibold">{business.businessName || "(상호 미입력)"}</span> (
+            {business.businessRegistrationNumber}) — 승인 여부와 무관하게 자유롭게 조회할 수
+            있습니다.
+          </div>
+        </div>
+      ) : (
+        <div className="mx-auto max-w-3xl px-4 pt-4 text-sm text-slate-600 sm:px-6">
+          <span>
+            현재 사업장:{" "}
+            <span className="font-semibold text-slate-900">
+              {business.businessName || "(상호 미입력)"}
+            </span>{" "}
+            ({business.businessRegistrationNumber})
+          </span>
+        </div>
+      )}
 
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
         <SectionCard title="대상 근로자">

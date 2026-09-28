@@ -27,6 +27,25 @@ function useCurrentPathWithHash(): string {
   return pathname + hash;
 }
 
+/** 관리자가 /admin에서 특정 사업장을 "열기"로 들어왔을 때(?adminBusinessId=...), 사이드바의
+ * 일반 <Link>는 그 값을 모른 채 고정된 href로만 이동하므로 다른 메뉴를 클릭하는 순간 관리자
+ * 열람 모드가 풀려버린다. useSearchParams()는 정적 렌더링 중인 다른 페이지들(로그인 등)에서
+ * Suspense 없이 쓰면 빌드가 깨지므로, window.location만 직접 읽어 우회한다. */
+function useAdminBusinessIdParam(pathname: string): string | null {
+  const [id, setId] = useState<string | null>(null);
+  useEffect(() => {
+    setId(new URLSearchParams(window.location.search).get("adminBusinessId"));
+  }, [pathname]);
+  return id;
+}
+
+function withAdminParam(href: string, adminBusinessId: string | null): string {
+  if (!adminBusinessId) return href;
+  const [base, hash] = href.split("#");
+  const separator = base.includes("?") ? "&" : "?";
+  return `${base}${separator}adminBusinessId=${adminBusinessId}${hash ? `#${hash}` : ""}`;
+}
+
 export function LogoMark({ size = 40 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden="true">
@@ -143,17 +162,19 @@ function WorkspaceSearch() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const currentPath = useCurrentPathWithHash();
+  const adminBusinessId = useAdminBusinessIdParam(pathname);
   return (
     <div className="app-shell">
       <a href="#main-content" className="skip-link">본문으로 바로가기</a>
       <header className="app-topbar print:hidden"><Brand /><p className="brand-tagline">사업장의 노무, <strong>딱 맞게.</strong></p><WorkspaceSearch /><Link href="/login" className="topbar-login">로그인</Link><Link href="/account" className="workspace-profile"><span className="profile-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4" /><path d="M4 22v-3a8 8 0 0 1 16 0v3Z" /></svg></span><span>내 워크스페이스</span></Link></header>
       <aside className="app-sidebar print:hidden">
-        <nav aria-label="주 메뉴" className="sidebar-nav">{NAV_ITEMS.map((item) => <Link href={item.href} key={item.href} aria-current={currentPath === item.href ? "page" : undefined} className={`sidebar-link ${currentPath === item.href ? "is-active" : ""}`}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
+        <nav aria-label="주 메뉴" className="sidebar-nav">{NAV_ITEMS.map((item) => <Link href={withAdminParam(item.href, adminBusinessId)} key={item.href} aria-current={currentPath === item.href ? "page" : undefined} className={`sidebar-link ${currentPath === item.href ? "is-active" : ""}`}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
         <div className="sidebar-bottom"><div className="sidebar-note"><h3>좋은 사람과<br />더 나은 회사를<br /><strong>노무핏</strong>이<br />함께합니다.</h3><div className="note-line" /></div><Link className="sidebar-help" href="/#faq-title">이용 가이드 <span aria-hidden="true">↗</span></Link><Link className="sidebar-help" href="/contact">이용문의 <span aria-hidden="true">↗</span></Link></div>
       </aside>
       <div className="app-body"><main id="main-content" className="app-main">{children}</main></div>
-      <nav className="mobile-nav print:hidden" aria-label="모바일 주 메뉴">{NAV_ITEMS.map((item) => <Link key={item.href} href={item.href} aria-current={currentPath === item.href ? "page" : undefined} className={currentPath === item.href ? "is-active" : ""}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
+      <nav className="mobile-nav print:hidden" aria-label="모바일 주 메뉴">{NAV_ITEMS.map((item) => <Link key={item.href} href={withAdminParam(item.href, adminBusinessId)} aria-current={currentPath === item.href ? "page" : undefined} className={currentPath === item.href ? "is-active" : ""}><item.icon className="nav-icon" /><span>{item.label}</span></Link>)}</nav>
     </div>
   );
 }
