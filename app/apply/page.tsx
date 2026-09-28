@@ -350,7 +350,17 @@ function ApplyPageContent() {
   };
 
   const handleResetToExample = () => {
+    if (
+      !confirm(
+        "입력한 사업장 정보를 지우고 예시 화면으로 돌아갈까요?\n이 브라우저에서 다시 사업자등록번호를 입력하면 새 사업장으로 등록됩니다."
+      )
+    )
+      return;
+    // 익명 체험 세션 자체를 종료해야, 나중에 새로고침해도 같은 사업장이 다시 자동으로
+    // 불러와지지 않는다(로컬 상태만 지우면 세션이 남아있어 재조회 시 그대로 복원됨).
+    supabase.auth.signOut().catch(() => {});
     setStoredBusinessRegNumber(null);
+    setIsAnonymousUser(false);
     setBusiness(null);
     setDraftLoaded(false);
     setFormData(createExampleFormData());
