@@ -23,7 +23,7 @@ export function createDefaultFormData(): ContractFormData {
       businessPhone: "",
       fiveOrMoreEmployees: true,
       workerName: "",
-      workerGender: "M",
+      workerGender: null,
       workerBirthDate: "",
       workerAddress: "",
       workerPhone: "",

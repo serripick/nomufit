@@ -28,7 +28,7 @@ export function fromRow(row: EmployeeRow): EmployeeRecord {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     workerName: row.worker_name,
-    workerGender: row.worker_gender ?? "M",
+    workerGender: row.worker_gender,
     workerBirthDate: row.worker_birth_date ?? "",
     workerAddress: row.worker_address ?? "",
     workerPhone: row.worker_phone ?? "",

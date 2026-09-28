@@ -134,7 +134,7 @@ export const businessInfoSchema = z.object({
   businessPhone: z.string().min(1, "사업장 연락처를 입력해주세요."),
   fiveOrMoreEmployees: z.boolean(),
   workerName: z.string().min(1, "근로자 성명을 입력해주세요."),
-  workerGender: z.enum(["M", "F"]),
+  workerGender: z.enum(["M", "F"]).nullable(),
   workerBirthDate: z.string().min(1, "근로자 생년월일을 입력해주세요."),
   workerAddress: z.string().min(1, "근로자 주소를 입력해주세요."),
   workerPhone: z.string().min(1, "근로자 연락처를 입력해주세요."),

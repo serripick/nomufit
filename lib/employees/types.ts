@@ -6,7 +6,7 @@ export interface EmployeeRecord {
   updatedAt: string;
 
   workerName: string;
-  workerGender: Gender;
+  workerGender: Gender | null;
   workerBirthDate: string;
   workerAddress: string;
   workerPhone: string;

@@ -146,7 +146,9 @@ export interface BusinessInfo {
   /** 상시근로자 5인 이상 여부. 연장/야간/휴일 가산수당(1.5배)·연차휴가 의무·공휴일 유급화 등이 이 값에 따라 달라진다. */
   fiveOrMoreEmployees: boolean;
   workerName: string;
-  workerGender: Gender;
+  /** 새 직원을 입력받기 시작할 때는 null — 라디오 버튼 어느 쪽도 선택되지 않은 채로 두어,
+   * 서명 시 근로자가 직접 표시하도록 서식에 "남성 / 여성"을 그대로 출력할 수 있게 한다. */
+  workerGender: Gender | null;
   workerBirthDate: string;
   workerAddress: string;
   workerPhone: string;

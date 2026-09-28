@@ -1,4 +1,11 @@
-import { BreakTimeEntry, WEEKDAY_LABEL, Weekday } from "./types";
+import { BreakTimeEntry, Gender, WEEKDAY_LABEL, Weekday } from "./types";
+
+/** 아직 선택되지 않았으면(서명 시 근로자가 직접 표시하도록) 양쪽을 모두 보여준다. */
+export function formatGender(gender: Gender | null): string {
+  if (gender === "M") return "남성";
+  if (gender === "F") return "여성";
+  return "남성 / 여성";
+}
 
 export function formatWeekdayList(days: Weekday[]): string {
   const order: Weekday[] = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
