@@ -583,11 +583,6 @@ function ApplyPageContent() {
                   onDownloadPdf={() =>
                     fetchAndDownloadPdf("/api/pdf/contract", formData, "근로계약서.pdf")
                   }
-                  disabledReason={
-                    validation.success
-                      ? undefined
-                      : "입력을 확인해주세요 항목을 모두 채운 뒤 다운로드·인쇄할 수 있습니다."
-                  }
                 />
               ) : (
                 <InquiryNote
