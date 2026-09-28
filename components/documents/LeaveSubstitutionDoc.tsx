@@ -177,8 +177,8 @@ export function LeaveSubstitutionPreview({ data }: { data: LeaveSubstitutionData
 
       <p className="mt-6 text-sm font-semibold print:mt-4 print:text-xs">1. 당사자</p>
       <p className="mt-1 text-sm print:text-xs">
-        사 업 주 : {data.representativeName || "미입력"} &nbsp;&nbsp;&nbsp; 직원 대표 :{" "}
-        {data.repName || "미입력"}
+        사 업 주 : {data.representativeName || ""} &nbsp;&nbsp;&nbsp; 직원 대표 :{" "}
+        {data.repName || ""}
       </p>
 
       <p className="mt-6 text-sm font-semibold print:mt-4 print:text-xs">2. 합의 내용</p>
@@ -204,10 +204,10 @@ export function LeaveSubstitutionPreview({ data }: { data: LeaveSubstitutionData
         <tbody>
           {data.pairs.map((p) => (
             <tr key={p.id}>
-              <td className="border border-slate-400 px-2 py-1.5">{p.holidayDate || "미입력"}</td>
-              <td className="border border-slate-400 px-2 py-1.5">{p.holidayName || "미입력"}</td>
+              <td className="border border-slate-400 px-2 py-1.5">{p.holidayDate || ""}</td>
+              <td className="border border-slate-400 px-2 py-1.5">{p.holidayName || ""}</td>
               <td className="border border-slate-400 px-2 py-1.5">
-                {p.replacementDate || "미입력"}
+                {p.replacementDate || ""}
               </td>
             </tr>
           ))}
@@ -224,8 +224,8 @@ export function LeaveSubstitutionPreview({ data }: { data: LeaveSubstitutionData
 
       <p className="mt-3 text-sm font-semibold print:text-xs">제4조 [유효기간]</p>
       <p className="text-sm leading-relaxed print:text-xs">
-        본 합의서의 유효기간은 {data.effectiveStart || "미입력"}부터{" "}
-        {data.effectiveEnd || "미입력"}까지로 한다.
+        본 합의서의 유효기간은 {data.effectiveStart || ""}부터{" "}
+        {data.effectiveEnd || ""}까지로 한다.
       </p>
 
       <DocParagraph>
@@ -239,10 +239,10 @@ export function LeaveSubstitutionPreview({ data }: { data: LeaveSubstitutionData
 
       <div className="mt-8 grid grid-cols-2 gap-8 text-sm print:mt-4 print:text-xs">
         <div>
-          <p>사업주(대표자): {data.representativeName || "미입력"} (인)</p>
+          <p>사업주(대표자): {data.representativeName || ""} (인)</p>
         </div>
         <div>
-          <p>근로자대표: {data.repName || "미입력"} (서명)</p>
+          <p>근로자대표: {data.repName || ""} (서명)</p>
         </div>
       </div>
     </DocShell>

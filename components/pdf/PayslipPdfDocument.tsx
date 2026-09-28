@@ -41,13 +41,13 @@ export function PayslipPdfDocument({
         </Text>
 
         <View style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 10, gap: 4 }}>
-          <Text style={{ width: "50%", fontSize: 8.5 }}>성명: {employee.workerName || "미입력"}</Text>
+          <Text style={{ width: "50%", fontSize: 8.5 }}>성명: {employee.workerName || ""}</Text>
           <Text style={{ width: "50%", fontSize: 8.5 }}>
-            생년월일: {employee.workerBirthDate || "미입력"}
+            생년월일: {employee.workerBirthDate || ""}
           </Text>
-          <Text style={{ width: "50%", fontSize: 8.5 }}>연락처: {employee.workerPhone || "미입력"}</Text>
+          <Text style={{ width: "50%", fontSize: 8.5 }}>연락처: {employee.workerPhone || ""}</Text>
           <Text style={{ width: "50%", fontSize: 8.5 }}>
-            담당업무: {employee.jobDescription || "미입력"}
+            담당업무: {employee.jobDescription || ""}
           </Text>
         </View>
 

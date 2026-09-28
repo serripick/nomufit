@@ -178,7 +178,7 @@ export function DismissalNoticePreview({ data }: { data: DismissalNoticeData }) 
 
       <DocTable>
         <tr>
-          <DocField label="사업장명" value={data.businessName || "(사업장명 미입력)"} />
+          <DocField label="사업장명" value={data.businessName || ""} />
           <DocField label="직원명" value={data.workerName} />
         </tr>
         <tr>
@@ -216,11 +216,11 @@ export function DismissalNoticePreview({ data }: { data: DismissalNoticeData }) 
       </DocTable>
 
       <p className="mt-6 text-sm print:mt-4 print:text-xs">
-        발신 : {data.businessAddress || "미입력"}
+        발신 : {data.businessAddress || ""}
       </p>
       <p className="mt-1 text-sm print:text-xs">
-        발신 : {data.businessName || "(사업장명 미입력)"} 대표{" "}
-        {data.representativeName || "미입력"} (서명/인)
+        발신 : {data.businessName || ""} 대표{" "}
+        {data.representativeName || ""} (서명/인)
       </p>
 
       <p className="mt-6 text-center text-sm print:mt-4 print:text-xs">
@@ -237,10 +237,10 @@ export function DismissalNoticePreview({ data }: { data: DismissalNoticeData }) 
           {data.noticeDate || "20     년      월      일"}
         </p>
         <p className="mt-6 text-right text-sm print:mt-4 print:text-xs">
-          위 수령인 : {data.workerName || "미입력"} (서명/인)
+          위 수령인 : {data.workerName || ""} (서명/인)
         </p>
         <p className="mt-4 text-center text-sm font-semibold print:mt-2 print:text-xs">
-          {data.businessName || "(사업장명 미입력)"} 대표 귀중
+          {data.businessName || ""} 대표 귀중
         </p>
       </div>
     </DocShell>

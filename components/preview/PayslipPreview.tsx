@@ -46,19 +46,19 @@ export function PayslipPreview({
       <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1 text-sm print:text-xs">
         <p>
           <span className="text-slate-500">성명: </span>
-          {employee.workerName || "미입력"}
+          {employee.workerName || ""}
         </p>
         <p>
           <span className="text-slate-500">생년월일: </span>
-          {employee.workerBirthDate || "미입력"}
+          {employee.workerBirthDate || ""}
         </p>
         <p>
           <span className="text-slate-500">연락처: </span>
-          {employee.workerPhone || "미입력"}
+          {employee.workerPhone || ""}
         </p>
         <p>
           <span className="text-slate-500">담당업무: </span>
-          {employee.jobDescription || "미입력"}
+          {employee.jobDescription || ""}
         </p>
       </div>
 

@@ -22,14 +22,14 @@ export function LeaveRequestPdf({ data }: { data: LeaveRequestData }) {
         <DocTable
           rows={[
             [
-              { label: "사업장명", value: data.businessName || "(사업장명 미입력)" },
+              { label: "사업장명", value: data.businessName || "" },
               { label: "직원명", value: data.workerName },
             ],
             [{ label: "비상연락처", value: data.contact, span: 2 }],
             [
               {
                 label: "휴가 기간",
-                value: `${data.startDate || "미입력"} 부터 ${data.endDate || data.startDate || "미입력"} 까지${
+                value: `${data.startDate || ""} 부터 ${data.endDate || data.startDate || ""} 까지${
                   days !== null ? ` (${days}일간)` : ""
                 }`,
                 span: 2,
@@ -51,14 +51,14 @@ export function LeaveRequestPdf({ data }: { data: LeaveRequestData }) {
         <Text style={docStyles.centerNote}>{data.applyDate || "20     년      월      일"}</Text>
 
         <Text style={{ marginTop: 12, textAlign: "right", fontSize: 8.5 }}>
-          직원 : {data.workerName || "미입력"} (서명/인)
+          직원 : {data.workerName || ""} (서명/인)
         </Text>
         <Text style={{ marginTop: 3, textAlign: "right", fontSize: 8.5 }}>
-          사업주 : {data.representativeName || "미입력"} (서명/인)
+          사업주 : {data.representativeName || ""} (서명/인)
         </Text>
 
         <Text style={[docStyles.centerNote, { fontWeight: 700 }]}>
-          {data.businessName || "(사업장명 미입력)"} 대표귀중
+          {data.businessName || ""} 대표귀중
         </Text>
       </Page>
     </Document>

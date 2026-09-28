@@ -12,7 +12,7 @@ export function DismissalNoticePdf({ data }: { data: DismissalNoticeData }) {
         <DocTable
           rows={[
             [
-              { label: "사업장명", value: data.businessName || "(사업장명 미입력)" },
+              { label: "사업장명", value: data.businessName || "" },
               { label: "직원명", value: data.workerName },
             ],
             [
@@ -45,9 +45,9 @@ export function DismissalNoticePdf({ data }: { data: DismissalNoticeData }) {
           ]}
         />
 
-        <Text style={{ marginTop: 10, fontSize: 8.5 }}>발신 : {data.businessAddress || "미입력"}</Text>
+        <Text style={{ marginTop: 10, fontSize: 8.5 }}>발신 : {data.businessAddress || ""}</Text>
         <Text style={{ marginTop: 2, fontSize: 8.5 }}>
-          발신 : {data.businessName || "(사업장명 미입력)"} 대표 {data.representativeName || "미입력"} (서명/인)
+          발신 : {data.businessName || ""} 대표 {data.representativeName || ""} (서명/인)
         </Text>
 
         <Text style={docStyles.centerNote}>{data.noticeDate || "20     년      월      일"}</Text>
@@ -58,10 +58,10 @@ export function DismissalNoticePdf({ data }: { data: DismissalNoticeData }) {
           <Text style={{ marginTop: 10, fontSize: 8.5 }}>해고 예고 통보서를 수령하였음을 확인합니다.</Text>
           <Text style={docStyles.centerNote}>{data.noticeDate || "20     년      월      일"}</Text>
           <Text style={{ marginTop: 10, textAlign: "right", fontSize: 8.5 }}>
-            위 수령인 : {data.workerName || "미입력"} (서명/인)
+            위 수령인 : {data.workerName || ""} (서명/인)
           </Text>
           <Text style={[docStyles.centerNote, { fontWeight: 700 }]}>
-            {data.businessName || "(사업장명 미입력)"} 대표 귀중
+            {data.businessName || ""} 대표 귀중
           </Text>
         </View>
       </Page>

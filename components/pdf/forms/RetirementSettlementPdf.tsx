@@ -12,8 +12,8 @@ export function RetirementSettlementPdf({ data }: { data: RetirementSettlementDa
         <DocTitle>퇴직 정산 확인서</DocTitle>
 
         <Text style={docStyles.paragraph}>
-          {data.businessName || "(사업장명 미입력)"} 대표 {data.representativeName || "미입력"}
-          과(와) (이하 &quot;사업주&quot;라고 한다)와 {data.workerName || "미입력"}(이하 &quot;직원&quot;이라고
+          {data.businessName || ""} 대표 {data.representativeName || ""}
+          과(와) (이하 &quot;사업주&quot;라고 한다)와 {data.workerName || ""}(이하 &quot;직원&quot;이라고
           한다)는 다음과 같이 합의하고 이에 각자의 책임과 의무를 명확히 하기 위하여 본 확인서를 작성한다.
         </Text>
 
@@ -23,16 +23,16 @@ export function RetirementSettlementPdf({ data }: { data: RetirementSettlementDa
           <Text style={docStyles.numberedItem}>
             1. 합의 금액 : <Text style={{ fontWeight: 700 }}>{formatCurrency(data.settlementAmount)}</Text>
           </Text>
-          <Text style={docStyles.numberedItem}>2. 지급일정 : {data.paymentDate || "미입력"}</Text>
+          <Text style={docStyles.numberedItem}>2. 지급일정 : {data.paymentDate || ""}</Text>
           <Text style={docStyles.numberedItem}>
             3. 수령방법 : {data.paymentMethod}
             {data.paymentMethod === "계좌이체" &&
-              ` (은행: ${data.bankName || "미입력"} / 계좌번호: ${data.accountNumber || "미입력"} / 예금주: ${data.accountHolder || "미입력"})`}
+              ` (은행: ${data.bankName || ""} / 계좌번호: ${data.accountNumber || ""} / 예금주: ${data.accountHolder || ""})`}
           </Text>
           <Text style={[docStyles.numberedItem, { fontWeight: 700 }]}>4. 합의내용</Text>
           <Text style={docStyles.numberedItem}>
-            가. &quot;직원&quot;은 상기금액을 지급받음으로써 입사한 {nb(data.hireDate) || "미입력"}로부터 퇴사한{" "}
-            {nb(data.resignationDate) || "미입력"}까지 발생한 퇴직금 및 일체의 근로관련 모든 법적 제수당 금액에
+            가. &quot;직원&quot;은 상기금액을 지급받음으로써 입사한 {nb(data.hireDate) || ""}로부터 퇴사한{" "}
+            {nb(data.resignationDate) || ""}까지 발생한 퇴직금 및 일체의 근로관련 모든 법적 제수당 금액에
             대해 모두 정산받았음을 확인한다. (법적 제수당은 기본, 연장, 주휴수당, 연차수당이다)
           </Text>
           <Text style={docStyles.numberedItem}>
@@ -50,7 +50,7 @@ export function RetirementSettlementPdf({ data }: { data: RetirementSettlementDa
             &quot;사업주&quot;에 대한 법적 분쟁에 어떠한 형식으로든 관여하지 않을 것임을 확인한다.
           </Text>
           <Text style={docStyles.numberedItem}>
-            마. &quot;직원&quot;과 &quot;사업주&quot;의 근로관계는 {nb(data.resignationDate) || "미입력"}부로
+            마. &quot;직원&quot;과 &quot;사업주&quot;의 근로관계는 {nb(data.resignationDate) || ""}부로
             종료한다.
           </Text>
           <Text style={docStyles.numberedItem}>
@@ -63,15 +63,15 @@ export function RetirementSettlementPdf({ data }: { data: RetirementSettlementDa
 
         <View style={docStyles.signRow}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 8.5 }}>생년월일 : {data.workerBirthDate || "미입력"}</Text>
-            <Text style={{ fontSize: 8.5 }}>직위/근무장소 : {data.position || "미입력"}</Text>
+            <Text style={{ fontSize: 8.5 }}>생년월일 : {data.workerBirthDate || ""}</Text>
+            <Text style={{ fontSize: 8.5 }}>직위/근무장소 : {data.position || ""}</Text>
             <Text style={{ fontSize: 8.5, marginTop: 4 }}>
-              &apos;직원&apos; : {data.workerName || "미입력"} (인)
+              &apos;직원&apos; : {data.workerName || ""} (인)
             </Text>
           </View>
           <View style={{ flex: 1, alignItems: "flex-end" }}>
             <Text style={{ fontSize: 8.5 }}>
-              &apos;사업주&apos; : {data.representativeName || "미입력"} (인)
+              &apos;사업주&apos; : {data.representativeName || ""} (인)
             </Text>
           </View>
         </View>

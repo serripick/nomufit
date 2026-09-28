@@ -13,7 +13,7 @@ export function ResignationLetterPdf({ data }: { data: ResignationLetterData }) 
         <DocTable
           rows={[
             [
-              { label: "사업장명", value: data.businessName || "(사업장명 미입력)" },
+              { label: "사업장명", value: data.businessName || "" },
               { label: "직원명", value: data.workerName },
             ],
             [
@@ -55,10 +55,10 @@ export function ResignationLetterPdf({ data }: { data: ResignationLetterData }) 
 
         <Text style={docStyles.centerNote}>{data.writtenDate || "20     년      월      일"}</Text>
         <Text style={{ marginTop: 10, textAlign: "right", fontSize: 8.5 }}>
-          직원 : {data.workerName || "미입력"} (서명/인)
+          직원 : {data.workerName || ""} (서명/인)
         </Text>
         <Text style={[docStyles.centerNote, { fontWeight: 700 }]}>
-          {data.businessName || "(사업장명 미입력)"} 대표귀중
+          {data.businessName || ""} 대표귀중
         </Text>
       </Page>
     </Document>

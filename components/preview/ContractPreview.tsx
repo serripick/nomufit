@@ -76,7 +76,7 @@ function KeyValueRow({
       style={{ gridTemplateColumns: `${labelWidth}px 1fr` }}
     >
       <div className="bg-slate-50 px-2 py-1.5 text-slate-500 print:px-1.5 print:py-0.5">{label}</div>
-      <div className="px-2 py-1.5 text-slate-800 print:px-1.5 print:py-0.5">{value || "미입력"}</div>
+      <div className="px-2 py-1.5 text-slate-800 print:px-1.5 print:py-0.5">{value || ""}</div>
     </div>
   );
 }
@@ -121,8 +121,8 @@ export function ContractPreview({ data }: { data: ContractFormData }) {
       <div className="border-b-2 border-slate-800 px-8 py-6 print:px-4 print:py-3">
         <h1 className="text-center text-2xl font-bold tracking-wide print:text-base">근로계약서</h1>
         <p className="mt-3 text-center text-xs leading-relaxed text-slate-600 print:mt-1.5 print:text-[10px]">
-          {businessInfo.businessName || "(사업장명 미입력)"}(이하 &quot;사업주&quot;라 함)와(과){" "}
-          {businessInfo.workerName || "(근로자명 미입력)"}(이하 &quot;근로자&quot;라 함)은(는)
+          {businessInfo.businessName || ""}(이하 &quot;사업주&quot;라 함)와(과){" "}
+          {businessInfo.workerName || ""}(이하 &quot;근로자&quot;라 함)은(는)
           다음과 같이 근로계약을 체결한다.
         </p>
       </div>
@@ -164,7 +164,7 @@ export function ContractPreview({ data }: { data: ContractFormData }) {
 
         <ArticleRow number={3} title="근로계약기간">
           <p>
-            {businessInfo.contractStartDate || "미입력"}부터{" "}
+            {businessInfo.contractStartDate || ""}부터{" "}
             {businessInfo.contractEndDate
               ? `${businessInfo.contractEndDate}까지`
               : "기간의 정함 없음"}
@@ -176,8 +176,8 @@ export function ContractPreview({ data }: { data: ContractFormData }) {
             <ClauseList
               items={[
                 `입사일부터 ${probation.months}개월을 수습기간으로 한다(${
-                  businessInfo.contractStartDate || "미입력"
-                }부터 ${probationEndDate || "미입력"}까지).`,
+                  businessInfo.contractStartDate || ""
+                }부터 ${probationEndDate || ""}까지).`,
                 "수습기간 종료 시 수습기간 중의 근태, 근무성적, 동료와의 관계성, 업무숙련도 등을 고려하여 본채용 여부를 결정한다.",
                 `사업주는 근로자에게 수습기간 동안 정규임금의 ${probation.wagePercent}%에 해당하는 임금을 지급할 수 있다. 다만 최저임금액의 90% 이상을 지급한다.`,
               ]}
@@ -328,9 +328,9 @@ export function ContractPreview({ data }: { data: ContractFormData }) {
                       ? "임금은 월급제로 하며, 위 임금총액에는 연장·야간·휴일·연차수당이 포함되어 있다."
                       : "임금은 월급제로 하며, 위 표의 기본급 외 연장·야간·휴일·연차수당은 이와 별도로 산정하여 추가 지급한다.",
                 `임금은 세전금액에서 법정세금 등을 원천징수하여 ${
-                  wage.payDay || "미입력"
+                  wage.payDay || ""
                 }에 지급하며, 지급방법은 ${
-                  wage.payMethod || "미입력"
+                  wage.payMethod || ""
                 }으로 한다. 다만 지급일이 휴(무)일 또는 공휴일과 중복되는 경우 그 이후 첫 소정근로일에 지급할 수 있다.`,
                 "근로자가 해당월에 중도 입사·퇴직하거나 결근하는 등 근태사고가 발생하는 경우 당해 월 지급액을 일할계산(공제)하여 지급한다.",
                 ...(breakdown.premiumMultiplier === 1 &&
@@ -457,15 +457,15 @@ export function ContractPreview({ data }: { data: ContractFormData }) {
         <div className="grid grid-cols-1 gap-8 print:gap-4 sm:grid-cols-2">
           <div className="text-xs leading-relaxed print:text-[10px]">
             <p className="mb-2 font-semibold text-slate-900 print:mb-1">사업주 (갑)</p>
-            <p>상호: {businessInfo.businessName || "미입력"}</p>
-            <p>주소: {businessInfo.businessAddress || "미입력"}</p>
-            <p>대표자: {businessInfo.representativeName || "미입력"} (인)</p>
+            <p>상호: {businessInfo.businessName || ""}</p>
+            <p>주소: {businessInfo.businessAddress || ""}</p>
+            <p>대표자: {businessInfo.representativeName || ""} (인)</p>
           </div>
           <div className="text-xs leading-relaxed print:text-[10px]">
             <p className="mb-2 font-semibold text-slate-900 print:mb-1">근로자 (을)</p>
-            <p>성명: {businessInfo.workerName || "미입력"} (서명)</p>
-            <p>주소: {businessInfo.workerAddress || "미입력"}</p>
-            <p>생년월일: {businessInfo.workerBirthDate || "미입력"}</p>
+            <p>성명: {businessInfo.workerName || ""} (서명)</p>
+            <p>주소: {businessInfo.workerAddress || ""}</p>
+            <p>생년월일: {businessInfo.workerBirthDate || ""}</p>
           </div>
         </div>
       </div>

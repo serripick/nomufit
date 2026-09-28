@@ -112,8 +112,8 @@ export function ContractPdfDocument({ data }: { data: ContractFormData }) {
         : wage.isInclusiveWage
           ? "임금은 월급제로 하며, 위 임금총액에는 연장·야간·휴일·연차수당이 포함되어 있다."
           : "임금은 월급제로 하며, 위 표의 기본급 외 연장·야간·휴일·연차수당은 이와 별도로 산정하여 추가 지급한다.",
-    `임금은 세전금액에서 법정세금 등을 원천징수하여 ${wage.payDay || "미입력"}에 지급하며, 지급방법은 ${
-      wage.payMethod || "미입력"
+    `임금은 세전금액에서 법정세금 등을 원천징수하여 ${wage.payDay || ""}에 지급하며, 지급방법은 ${
+      wage.payMethod || ""
     }으로 한다. 다만 지급일이 휴(무)일 또는 공휴일과 중복되는 경우 그 이후 첫 소정근로일에 지급할 수 있다.`,
     "근로자가 해당월에 중도 입사·퇴직하거나 결근하는 등 근태사고가 발생하는 경우 당해 월 지급액을 일할계산(공제)하여 지급한다.",
     ...(breakdown.premiumMultiplier === 1 &&
@@ -129,8 +129,8 @@ export function ContractPdfDocument({ data }: { data: ContractFormData }) {
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>근로계약서</Text>
         <Text style={styles.titleNote}>
-          {businessInfo.businessName || "(사업장명 미입력)"}(이하 &quot;사업주&quot;라 함)와(과){" "}
-          {businessInfo.workerName || "(근로자명 미입력)"}(이하 &quot;근로자&quot;라 함)은(는) 다음과
+          {businessInfo.businessName || ""}(이하 &quot;사업주&quot;라 함)와(과){" "}
+          {businessInfo.workerName || ""}(이하 &quot;근로자&quot;라 함)은(는) 다음과
           같이 근로계약을 체결한다.
         </Text>
 
@@ -167,11 +167,11 @@ export function ContractPdfDocument({ data }: { data: ContractFormData }) {
             <View style={styles.kvTable}>
               <View style={styles.kvRow}>
                 <Text style={styles.kvLabel}>담당업무</Text>
-                <Text style={styles.kvValue}>{businessInfo.jobDescription || "미입력"}</Text>
+                <Text style={styles.kvValue}>{businessInfo.jobDescription || ""}</Text>
               </View>
               <View style={styles.kvRow}>
                 <Text style={styles.kvLabel}>근무장소</Text>
-                <Text style={styles.kvValue}>{businessInfo.workLocation || "미입력"}</Text>
+                <Text style={styles.kvValue}>{businessInfo.workLocation || ""}</Text>
               </View>
             </View>
             <Text style={{ marginTop: 4, fontSize: 7.5, color: "#64748b" }}>
@@ -181,7 +181,7 @@ export function ContractPdfDocument({ data }: { data: ContractFormData }) {
 
           <ArticleRow number={3} title="근로계약기간">
             <Text>
-              {nb(businessInfo.contractStartDate) || "미입력"}부터{" "}
+              {nb(businessInfo.contractStartDate) || ""}부터{" "}
               {businessInfo.contractEndDate ? `${nb(businessInfo.contractEndDate)}까지` : "기간의 정함 없음"}
             </Text>
           </ArticleRow>
@@ -191,8 +191,8 @@ export function ContractPdfDocument({ data }: { data: ContractFormData }) {
               <ClauseList
                 items={[
                   `입사일부터 ${probation.months}개월을 수습기간으로 한다(${
-                    nb(businessInfo.contractStartDate) || "미입력"
-                  }부터 ${nb(probationEndDate) || "미입력"}까지).`,
+                    nb(businessInfo.contractStartDate) || ""
+                  }부터 ${nb(probationEndDate) || ""}까지).`,
                   "수습기간 종료 시 수습기간 중의 근태, 근무성적, 동료와의 관계성, 업무숙련도 등을 고려하여 본채용 여부를 결정한다.",
                   `사업주는 근로자에게 수습기간 동안 정규임금의 ${probation.wagePercent}%에 해당하는 임금을 지급할 수 있다. 다만 최저임금액의 90% 이상을 지급한다.`,
                 ]}
@@ -286,15 +286,15 @@ export function ContractPdfDocument({ data }: { data: ContractFormData }) {
           <View style={{ flexDirection: "row", gap: 20 }}>
             <View style={{ flex: 1, fontSize: 8 }}>
               <Text style={{ fontWeight: 700, marginBottom: 3 }}>사업주 (갑)</Text>
-              <Text>상호: {businessInfo.businessName || "미입력"}</Text>
-              <Text>주소: {businessInfo.businessAddress || "미입력"}</Text>
-              <Text>대표자: {businessInfo.representativeName || "미입력"} (인)</Text>
+              <Text>상호: {businessInfo.businessName || ""}</Text>
+              <Text>주소: {businessInfo.businessAddress || ""}</Text>
+              <Text>대표자: {businessInfo.representativeName || ""} (인)</Text>
             </View>
             <View style={{ flex: 1, fontSize: 8 }}>
               <Text style={{ fontWeight: 700, marginBottom: 3 }}>근로자 (을)</Text>
-              <Text>성명: {businessInfo.workerName || "미입력"} (서명)</Text>
-              <Text>주소: {businessInfo.workerAddress || "미입력"}</Text>
-              <Text>생년월일: {businessInfo.workerBirthDate || "미입력"}</Text>
+              <Text>성명: {businessInfo.workerName || ""} (서명)</Text>
+              <Text>주소: {businessInfo.workerAddress || ""}</Text>
+              <Text>생년월일: {businessInfo.workerBirthDate || ""}</Text>
             </View>
           </View>
         </View>

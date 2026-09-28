@@ -357,7 +357,7 @@ export function WorkerRegisterPreview({ data }: { data: WorkerRegisterData }) {
       </DocTable>
 
       <p className="mt-10 text-center text-sm font-semibold print:mt-6 print:text-xs">
-        {data.businessName || "(사업장명 미입력)"} 대표귀중
+        {data.businessName || ""} 대표귀중
       </p>
     </DocShell>
   );

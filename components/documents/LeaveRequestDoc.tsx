@@ -151,7 +151,7 @@ export function LeaveRequestPreview({ data }: { data: LeaveRequestData }) {
 
       <DocTable>
         <tr>
-          <DocField label="사업장명" value={data.businessName || "(사업장명 미입력)"} />
+          <DocField label="사업장명" value={data.businessName || ""} />
           <DocField label="직원명" value={data.workerName} />
         </tr>
         <tr>
@@ -162,7 +162,7 @@ export function LeaveRequestPreview({ data }: { data: LeaveRequestData }) {
             label="휴가 기간"
             value={
               <>
-                {data.startDate || "미입력"} 부터 {data.endDate || data.startDate || "미입력"}{" "}
+                {data.startDate || ""} 부터 {data.endDate || data.startDate || ""}{" "}
                 까지 {days !== null && <span className="font-semibold">({days}일간)</span>}
               </>
             }
@@ -190,12 +190,12 @@ export function LeaveRequestPreview({ data }: { data: LeaveRequestData }) {
       </p>
 
       <div className="mt-8 flex flex-col items-end gap-1 text-sm print:mt-4 print:text-xs">
-        <p>직원 : {data.workerName || "미입력"} (서명/인)</p>
-        <p>사업주 : {data.representativeName || "미입력"} (서명/인)</p>
+        <p>직원 : {data.workerName || ""} (서명/인)</p>
+        <p>사업주 : {data.representativeName || ""} (서명/인)</p>
       </div>
 
       <p className="mt-6 text-center text-sm font-semibold print:mt-4 print:text-xs">
-        {data.businessName || "(사업장명 미입력)"} 대표귀중
+        {data.businessName || ""} 대표귀중
       </p>
     </DocShell>
   );

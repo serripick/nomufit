@@ -254,8 +254,8 @@ export function RetirementSettlementPreview({ data }: { data: RetirementSettleme
       <DocTitle>퇴직 정산 확인서</DocTitle>
 
       <p className="mt-6 text-sm leading-relaxed print:mt-4 print:text-xs">
-        {data.businessName || "(사업장명 미입력)"} 대표 {data.representativeName || "미입력"}
-        과(와) (이하 &quot;사업주&quot;라고 한다)와 {data.workerName || "미입력"}
+        {data.businessName || ""} 대표 {data.representativeName || ""}
+        과(와) (이하 &quot;사업주&quot;라고 한다)와 {data.workerName || ""}
         (이하 &quot;직원&quot;이라고 한다)는 다음과 같이 합의하고 이에 각자의 책임과 의무를
         명확히 하기 위하여 본 확인서를 작성한다.
       </p>
@@ -268,22 +268,22 @@ export function RetirementSettlementPreview({ data }: { data: RetirementSettleme
         <p>
           1. 합의 금액 : <span className="font-semibold">{formatCurrency(data.settlementAmount)}</span>
         </p>
-        <p>2. 지급일정 : {data.paymentDate || "미입력"}</p>
+        <p>2. 지급일정 : {data.paymentDate || ""}</p>
         <p>
           3. 수령방법 : {data.paymentMethod}
           {data.paymentMethod === "계좌이체" && (
             <span>
               {" "}
-              (은행: {data.bankName || "미입력"} / 계좌번호: {data.accountNumber || "미입력"} /
-              예금주: {data.accountHolder || "미입력"})
+              (은행: {data.bankName || ""} / 계좌번호: {data.accountNumber || ""} /
+              예금주: {data.accountHolder || ""})
             </span>
           )}
         </p>
 
         <p className="font-semibold">4. 합의내용</p>
         <p>
-          가. &quot;직원&quot;은 상기금액을 지급받음으로써 입사한 {data.hireDate || "미입력"}
-          로부터 퇴사한 {data.resignationDate || "미입력"}까지 발생한 퇴직금 및 일체의
+          가. &quot;직원&quot;은 상기금액을 지급받음으로써 입사한 {data.hireDate || ""}
+          로부터 퇴사한 {data.resignationDate || ""}까지 발생한 퇴직금 및 일체의
           근로관련 모든 법적 제수당 금액에 대해 모두 정산받았음을 확인한다. (법적 제수당은
           기본, 연장, 주휴수당, 연차수당이다)
         </p>
@@ -306,7 +306,7 @@ export function RetirementSettlementPreview({ data }: { data: RetirementSettleme
         </p>
         <p>
           마. &quot;직원&quot;과 &quot;사업주&quot;의 근로관계는{" "}
-          {data.resignationDate || "미입력"}부로 종료한다.
+          {data.resignationDate || ""}부로 종료한다.
         </p>
         <p>
           5. &quot;사업주&quot;와 &quot;직원&quot;은 본 합의의 성립을 증명하기 위하여
@@ -320,12 +320,12 @@ export function RetirementSettlementPreview({ data }: { data: RetirementSettleme
 
       <div className="mt-8 grid grid-cols-2 gap-8 text-sm print:mt-4 print:text-xs">
         <div>
-          <p>생년월일 : {data.workerBirthDate || "미입력"}</p>
-          <p>직위/근무장소 : {data.position || "미입력"}</p>
-          <p className="mt-2">&apos;직원&apos; : {data.workerName || "미입력"} (인)</p>
+          <p>생년월일 : {data.workerBirthDate || ""}</p>
+          <p>직위/근무장소 : {data.position || ""}</p>
+          <p className="mt-2">&apos;직원&apos; : {data.workerName || ""} (인)</p>
         </div>
         <div className="text-right">
-          <p>&apos;사업주&apos; : {data.representativeName || "미입력"} (인)</p>
+          <p>&apos;사업주&apos; : {data.representativeName || ""} (인)</p>
         </div>
       </div>
     </DocShell>

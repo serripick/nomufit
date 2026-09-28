@@ -12,7 +12,7 @@ export function LeaveSubstitutionPdf({ data }: { data: LeaveSubstitutionData }) 
 
         <Text style={[docStyles.numberedItem, { marginTop: 10, fontWeight: 700 }]}>1. 당사자</Text>
         <Text style={docStyles.numberedItem}>
-          사 업 주 : {data.representativeName || "미입력"}    직원 대표 : {data.repName || "미입력"}
+          사 업 주 : {data.representativeName || ""}    직원 대표 : {data.repName || ""}
         </Text>
 
         <Text style={[docStyles.numberedItem, { marginTop: 10, fontWeight: 700 }]}>2. 합의 내용</Text>
@@ -30,9 +30,9 @@ export function LeaveSubstitutionPdf({ data }: { data: LeaveSubstitutionData }) 
         <SimpleTable
           headers={["대체할 휴일", "휴일명", "대체 근로일(연차 사용)"]}
           rows={data.pairs.map((p) => [
-            p.holidayDate || "미입력",
-            p.holidayName || "미입력",
-            p.replacementDate || "미입력",
+            p.holidayDate || "",
+            p.holidayName || "",
+            p.replacementDate || "",
           ])}
         />
 
@@ -47,7 +47,7 @@ export function LeaveSubstitutionPdf({ data }: { data: LeaveSubstitutionData }) 
 
         <Text style={[docStyles.numberedItem, { fontWeight: 700 }]}>제4조 [유효기간]</Text>
         <Text style={docStyles.numberedItem}>
-          본 합의서의 유효기간은 {nb(data.effectiveStart) || "미입력"}부터 {nb(data.effectiveEnd) || "미입력"}까지로
+          본 합의서의 유효기간은 {nb(data.effectiveStart) || ""}부터 {nb(data.effectiveEnd) || ""}까지로
           한다.
         </Text>
 
@@ -58,8 +58,8 @@ export function LeaveSubstitutionPdf({ data }: { data: LeaveSubstitutionData }) 
 
         <Text style={docStyles.centerNote}>20    년    월    일</Text>
 
-        <Text style={{ marginTop: 12, fontSize: 8.5 }}>사업주(대표자): {data.representativeName || "미입력"} (인)</Text>
-        <Text style={{ marginTop: 4, fontSize: 8.5 }}>근로자대표: {data.repName || "미입력"} (서명)</Text>
+        <Text style={{ marginTop: 12, fontSize: 8.5 }}>사업주(대표자): {data.representativeName || ""} (인)</Text>
+        <Text style={{ marginTop: 4, fontSize: 8.5 }}>근로자대표: {data.repName || ""} (서명)</Text>
       </Page>
     </Document>
   );

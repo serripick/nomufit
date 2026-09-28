@@ -164,15 +164,15 @@ export function RepresentativeSelectionPreview({ data }: { data: RepresentativeS
 
       <DocParagraph>
         직원 일동은 노사합의, 근로기준법 제62조 연차유급휴가의 대체와 관련하여 아래 직원을
-        근로자 대표로 선출하여 포괄 위임합니다. 위임 기간은 {data.termStart || "미입력"}부터{" "}
-        {data.termEnd || "미입력"}까지로 하되, 새로운 대표선정이 없으면 연임하는 것으로 한다.
+        근로자 대표로 선출하여 포괄 위임합니다. 위임 기간은 {data.termStart || ""}부터{" "}
+        {data.termEnd || ""}까지로 하되, 새로운 대표선정이 없으면 연임하는 것으로 한다.
       </DocParagraph>
 
       <p className="mt-8 text-center text-sm font-semibold print:mt-4 print:text-xs">- 아 래 -</p>
 
       <p className="mt-6 text-sm print:mt-3 print:text-xs">
-        직원대표 : <span className="font-semibold">{data.repName || "미입력"}</span> ( 생년월일 :{" "}
-        {data.repBirthDate || "미입력"} )
+        직원대표 : <span className="font-semibold">{data.repName || ""}</span> ( 생년월일 :{" "}
+        {data.repBirthDate || ""} )
       </p>
 
       <table className="mt-4 w-full border-collapse border border-slate-400 text-center text-sm print:mt-2 print:text-xs">
@@ -197,7 +197,7 @@ export function RepresentativeSelectionPreview({ data }: { data: RepresentativeS
       </table>
 
       <p className="mt-10 text-center text-sm font-semibold print:mt-6 print:text-xs">
-        {data.businessName || "(사업장명 미입력)"} 대표귀중
+        {data.businessName || ""} 대표귀중
       </p>
     </DocShell>
   );

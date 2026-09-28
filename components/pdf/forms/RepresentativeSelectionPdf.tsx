@@ -13,15 +13,15 @@ export function RepresentativeSelectionPdf({ data }: { data: RepresentativeSelec
 
         <DocParagraph>
           직원 일동은 노사합의, 근로기준법 제62조 연차유급휴가의 대체와 관련하여 아래 직원을 근로자 대표로
-          선출하여 포괄 위임합니다. 위임 기간은 {nb(data.termStart) || "미입력"}부터 {nb(data.termEnd) || "미입력"}까지로
+          선출하여 포괄 위임합니다. 위임 기간은 {nb(data.termStart) || ""}부터 {nb(data.termEnd) || ""}까지로
           하되, 새로운 대표선정이 없으면 연임하는 것으로 한다.
         </DocParagraph>
 
         <Text style={[docStyles.centerNote, { fontWeight: 700 }]}>-  아     래  -</Text>
 
         <Text style={{ marginTop: 10, fontSize: 8.5 }}>
-          직원대표 : <Text style={{ fontWeight: 700 }}>{data.repName || "미입력"}</Text> ( 생년월일 :{" "}
-          {data.repBirthDate || "미입력"} )
+          직원대표 : <Text style={{ fontWeight: 700 }}>{data.repName || ""}</Text> ( 생년월일 :{" "}
+          {data.repBirthDate || ""} )
         </Text>
 
         <View style={{ marginTop: 8 }}>
@@ -31,7 +31,7 @@ export function RepresentativeSelectionPdf({ data }: { data: RepresentativeSelec
           />
         </View>
 
-        <Text style={docStyles.centerNote}>{data.businessName || "(사업장명 미입력)"} 대표귀중</Text>
+        <Text style={docStyles.centerNote}>{data.businessName || ""} 대표귀중</Text>
       </Page>
     </Document>
   );

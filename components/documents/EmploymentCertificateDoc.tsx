@@ -231,7 +231,7 @@ export function EmploymentCertificatePreview({ data }: { data: EmploymentCertifi
 
       <DocTable>
         <tr>
-          <DocField label="증명서번호" value={`${b.businessName || "미입력"} ${data.certNumber || ""}`} colSpan={3} />
+          <DocField label="증명서번호" value={`${b.businessName || ""} ${data.certNumber || ""}`} colSpan={3} />
         </tr>
         <tr>
           <DocField label="성명" value={data.workerName} />
@@ -247,7 +247,7 @@ export function EmploymentCertificatePreview({ data }: { data: EmploymentCertifi
         <tr>
           <DocField
             label="입사일자"
-            value={`${data.hireDate || "미입력"} 부터 ${data.asOfDate || "현재"}까지`}
+            value={`${data.hireDate || ""} 부터 ${data.asOfDate || "현재"}까지`}
             colSpan={3}
           />
         </tr>
@@ -264,13 +264,13 @@ export function EmploymentCertificatePreview({ data }: { data: EmploymentCertifi
       </p>
 
       <p className="mt-8 text-center text-base font-semibold print:mt-4 print:text-sm">
-        {b.businessName || "(사업장명 미입력)"} &nbsp;&nbsp; 대표 &nbsp; {b.representativeName || "미입력"} &nbsp; (인)
+        {b.businessName || ""} &nbsp;&nbsp; 대표 &nbsp; {b.representativeName || ""} &nbsp; (인)
       </p>
 
       <div className="mt-10 space-y-1 text-xs text-slate-500 print:mt-6">
-        <p>주소 : {b.businessAddress || "미입력"}</p>
-        <p>전화 : {b.businessPhone || "미입력"}</p>
-        <p>사업자번호 : {b.businessRegistrationNumber || "미입력"}</p>
+        <p>주소 : {b.businessAddress || ""}</p>
+        <p>전화 : {b.businessPhone || ""}</p>
+        <p>사업자번호 : {b.businessRegistrationNumber || ""}</p>
       </div>
     </DocShell>
   );

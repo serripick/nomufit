@@ -39,7 +39,7 @@ export function WorkerRegisterPdf({ data }: { data: WorkerRegisterData }) {
             [{ label: "<17> 특기사항", value: data.specialNotes || "(교육, 건강, 휴직 등)", span: 2 }],
           ]}
         />
-        <Text style={docStyles.centerNote}>{data.businessName || "(사업장명 미입력)"} 대표귀중</Text>
+        <Text style={docStyles.centerNote}>{data.businessName || ""} 대표귀중</Text>
       </Page>
     </Document>
   );

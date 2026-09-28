@@ -110,7 +110,7 @@ export function KeyValueRow({ label, value }: { label: string; value: string }) 
   return (
     <View style={styles.kvRow}>
       <Text style={styles.kvLabel}>{label}</Text>
-      <Text style={styles.kvValue}>{value || "미입력"}</Text>
+      <Text style={styles.kvValue}>{value || ""}</Text>
     </View>
   );
 }
