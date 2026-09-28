@@ -4,9 +4,15 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdminRequest } from "@/lib/admin/isAdminRequest";
-import { approveBusinessAsAdmin, deleteBusinessAsAdmin } from "@/lib/businesses/adminStore";
+import {
+  approveBusinessAsAdmin,
+  deleteBusinessAsAdmin,
+  getBusinessByIdAsAdmin,
+  issueBusinessLoginAsAdmin,
+} from "@/lib/businesses/adminStore";
 import { deleteInquiryAsAdmin, updateInquiryStatusAsAdmin } from "@/lib/inquiries/adminStore";
 import { InquiryRecord } from "@/lib/inquiries/types";
+import { generateTempPassword } from "@/lib/auth/tempPassword";
 
 const ADMIN_COOKIE = "nomufit_admin";
 
@@ -76,4 +82,14 @@ export async function deleteInquiryAction(id: string): Promise<void> {
   await assertAdmin();
   await deleteInquiryAsAdmin(id);
   revalidatePath("/admin");
+}
+
+export async function issueLoginAction(businessId: string): Promise<{ password: string }> {
+  await assertAdmin();
+  const business = await getBusinessByIdAsAdmin(businessId);
+  if (!business) throw new Error("사업장을 찾을 수 없습니다.");
+  const password = generateTempPassword();
+  await issueBusinessLoginAsAdmin(business, password);
+  revalidatePath("/admin");
+  return { password };
 }

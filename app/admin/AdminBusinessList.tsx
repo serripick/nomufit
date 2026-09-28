@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BusinessRecord } from "@/lib/businesses/types";
-import { approveBusinessAction, deleteBusinessAction, logoutAdmin } from "./actions";
+import { approveBusinessAction, deleteBusinessAction, issueLoginAction, logoutAdmin } from "./actions";
 
 export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[] }) {
   const [isPending, startTransition] = useTransition();
@@ -30,6 +30,28 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
     setPendingId(id);
     startTransition(async () => {
       await approveBusinessAction(id, approved);
+      setPendingId(null);
+    });
+  };
+
+  const handleIssueLogin = (id: string, regNumber: string) => {
+    if (
+      !confirm(
+        `"${regNumber}"의 로그인 비밀번호를 새로 발급할까요?\n기존 비밀번호가 있었다면 무효화됩니다.`
+      )
+    )
+      return;
+    setPendingId(id);
+    startTransition(async () => {
+      try {
+        const { password } = await issueLoginAction(id);
+        window.prompt(
+          `접속 아이디: ${regNumber} (사업자등록번호 그대로)\n비밀번호를 복사해서 전달하세요:`,
+          password
+        );
+      } catch (err) {
+        alert(err instanceof Error ? err.message : "비밀번호 발급에 실패했습니다.");
+      }
       setPendingId(null);
     });
   };
@@ -102,6 +124,14 @@ export function AdminBusinessList({ businesses }: { businesses: BusinessRecord[]
                       }
                     >
                       {isPending && pendingId === b.id ? "처리 중..." : b.approved ? "승인 취소" : "승인"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleIssueLogin(b.id, b.businessRegistrationNumber)}
+                      disabled={isPending && pendingId === b.id}
+                      className="text-emerald-600 hover:underline disabled:opacity-50"
+                    >
+                      비밀번호 발급
                     </button>
                     <button
                       type="button"

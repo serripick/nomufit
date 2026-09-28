@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+import { registrationNumberToLoginEmail } from "@/lib/auth/loginId";
 import { AppShell, LogoMark, PageHeading } from "@/components/layout/AppShell";
 import { FieldLabel, TextInput } from "@/components/forms/fields";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,9 +18,12 @@ export default function LoginPage() {
     e.preventDefault();
     setStatus("loading");
     setErrorMessage("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: registrationNumberToLoginEmail(loginId),
+      password,
+    });
     if (error) {
-      setErrorMessage("이메일 또는 비밀번호가 올바르지 않습니다.");
+      setErrorMessage("접속 아이디 또는 비밀번호가 올바르지 않습니다.");
       setStatus("error");
       return;
     }
@@ -30,7 +34,7 @@ export default function LoginPage() {
     <AppShell>
       <PageHeading
         title="로그인"
-        description="정식 이용 승인 후 설정한 이메일과 비밀번호로 로그인하면, 다른 기기에서도 우리 사업장 정보를 이어서 관리할 수 있습니다."
+        description="정식 이용 승인 후 담당자에게 안내받은 접속 아이디(사업자등록번호)와 비밀번호로 로그인하면, 다른 기기에서도 우리 사업장 정보를 이어서 관리할 수 있습니다."
       />
       <div className="mx-auto max-w-sm px-4 py-10 sm:px-6">
         <form
@@ -41,11 +45,12 @@ export default function LoginPage() {
             <LogoMark size={40} />
           </div>
           <div>
-            <FieldLabel>이메일</FieldLabel>
+            <FieldLabel>접속 아이디 (사업자등록번호)</FieldLabel>
             <TextInput
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="123-45-67890"
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
               required
             />
           </div>
@@ -70,7 +75,7 @@ export default function LoginPage() {
           </button>
           <p className="text-xs text-slate-500">
             아직 계정이 없으신가요? 처음 방문 시 자동으로 임시로 이용해보실 수 있고, 정식 이용
-            승인 후 계정을 설정하실 수 있습니다.
+            승인 후 담당자로부터 접속 아이디와 비밀번호를 안내받으실 수 있습니다.
           </p>
         </form>
       </div>

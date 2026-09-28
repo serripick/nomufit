@@ -424,7 +424,7 @@ function ApplyPageContent() {
 
       {!adminBusinessId && business?.approved && isAnonymousUser && (
         <div className="mx-auto max-w-6xl px-4 pt-4 sm:px-6 print:hidden">
-          <AccountSetupBanner business={business} />
+          <AccountSetupBanner />
         </div>
       )}
 
